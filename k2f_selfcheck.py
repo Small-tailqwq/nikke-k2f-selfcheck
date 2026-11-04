@@ -334,6 +334,10 @@ def main(argv=None):
     parser.add_argument("--no-browser-count", action="store_true", help="跳过浏览器数据库统计")
     parser.add_argument("--no-open", action="store_true", help="生成报告后不自动打开浏览器")
     args = parser.parse_args(argv)
+    for stream in (sys.stdout, sys.stderr):
+        # 输出被重定向到非 UTF-8 代码页（如 CI 的 cp1252）时，替换无法编码的字符而不是崩溃。
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(errors="replace")
     if sys.version_info < (3, 11) or not hasattr(sqlite3.Connection, "deserialize"):
         print("需要包含 SQLite deserialize 支持的 Python 3.11+。", file=sys.stderr)
         return 2
