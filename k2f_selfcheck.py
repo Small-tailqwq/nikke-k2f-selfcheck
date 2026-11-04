@@ -20,6 +20,7 @@ from urllib.parse import urlsplit
 
 from k2f_i18n import LANGS, t
 from k2f_report import render_report
+from k2f_detection import environment_candidate
 
 
 k32 = ctypes.WinDLL("kernel32", use_last_error=True)
@@ -33,10 +34,15 @@ k32.CloseHandle.argtypes = [wt.HANDLE]
 k32.GetConsoleProcessList.argtypes = [ctypes.POINTER(wt.DWORD), wt.DWORD]
 k32.GetConsoleProcessList.restype = wt.DWORD
 k32.GetUserDefaultUILanguage.restype = wt.WORD
+SAMPLE_MAX_READ_BYTES = 4 * 1024 * 1024
 
 
 class LocalOnlyError(OSError):
     """该路径不能在纯本地范围内检查。"""
+
+
+class UnsetEnvironmentError(OSError):
+    """目标依赖的环境变量未设置。"""
 
 
 def ensure_environment():
@@ -92,11 +98,15 @@ def expand(template):
     if template.startswith("~"):
         profile = os.environ.get("USERPROFILE")
         if not profile:
-            raise LocalOnlyError("missing_environment")
+            raise UnsetEnvironmentError("missing_environment")
         template = profile + template[1:]
+    for match in re.finditer(r"%([^%]+)%|\$\{([^}]+)\}|\$([A-Za-z_][A-Za-z0-9_]*)", template):
+        name = next(group for group in match.groups() if group is not None)
+        if not os.environ.get(name):
+            raise UnsetEnvironmentError("missing_environment")
     path = os.path.expandvars(template)
     if re.search(r"%[^%]+%|\$[A-Za-z_{]", path):
-        raise LocalOnlyError("missing_environment")
+        raise UnsetEnvironmentError("missing_environment")
     return path
 
 
@@ -148,6 +158,8 @@ def check_path(template):
         return {"status": "present", "type": "dir" if stat.S_ISDIR(info.st_mode) else "file"}
     except FileNotFoundError:
         return {"status": "absent"}
+    except UnsetEnvironmentError:
+        return {"status": "unset"}
     except LocalOnlyError:
         return {"status": "skipped"}
     except OSError:
@@ -177,8 +189,8 @@ def read_shared(path):
         size = ctypes.c_longlong()
         if not k32.GetFileSizeEx(handle, ctypes.byref(size)):
             raise OSError("database_size_unreadable")
-        # 控制共享快照的内存占用；超出范围的数据库明确标为未读取。
-        if size.value > 512 * 1024 * 1024:
+        # stat 后仍需复查大小，以覆盖文件在打开前增长的情况。
+        if size.value > SAMPLE_MAX_READ_BYTES:
             raise OSError("database_too_large")
         buffer = ctypes.create_string_buffer(size.value)
         read = wt.DWORD()
@@ -225,6 +237,8 @@ def browser_database(path, store):
     try:
         path = local_path(path)
         before = os.stat(path)
+        if before.st_size > SAMPLE_MAX_READ_BYTES:
+            return {"status": "over_cap"}
         raw = read_shared(path)
         after = os.stat(path)
         wal = local_path(path + "-wal")
@@ -238,8 +252,8 @@ def browser_database(path, store):
         try:
             connection.deserialize(raw)
             connection.execute("PRAGMA query_only=ON")
-            plain = "WHEN COALESCE(length(value), 0) > 0 THEN 'plain' " if store == "cookies" else ""
-            classification = (f"CASE {plain}WHEN {column} IS NULL OR length({column}) = 0 THEN 'empty' "
+            empty = "CASE WHEN COALESCE(length(value), 0) > 0 THEN 'plain' ELSE 'empty' END" if store == "cookies" else "'empty'"
+            classification = (f"CASE WHEN {column} IS NULL OR length({column}) = 0 THEN {empty} "
                               f"WHEN substr(CAST({column} AS BLOB), 1, 3) = X'763130' THEN 'v10' "
                               f"WHEN substr(CAST({column} AS BLOB), 1, 3) = X'763230' THEN 'v20' ELSE 'other' END")
             source, identifier = ("origin_url", "username_value") if store == "passwords" else ("host_key", "name")
@@ -271,24 +285,56 @@ def browser_roots():
         ("Edge", r"%LOCALAPPDATA%\Microsoft\Edge\User Data", False),
         ("Brave", r"%LOCALAPPDATA%\BraveSoftware\Brave-Browser\User Data", False),
         ("Vivaldi", r"%LOCALAPPDATA%\Vivaldi\User Data", False),
-        ("Opera", r"%APPDATA%\Opera Software\Opera Stable", True),
+        ("Opera", r"%APPDATA%\Opera Software\Opera Stable", False),
     ):
         yield name, template, flat
 
 
-def browser_profiles(root, flat=False):
+def browser_profiles(root, flat=False, failures=None):
     root = local_path(root)
     if not os.path.isdir(root):
         return []
     profiles = [("主配置", root)] if flat else []
     with os.scandir(root) as entries:
         for entry in sorted(entries, key=lambda e: e.name):
-            if entry.name == "Default" or re.fullmatch(r"Profile \d+", entry.name):
-                # 使用固定别名，报告不保留自定义配置名称。
+            try:
                 local_path(entry.path)
                 if entry.is_dir(follow_symlinks=False):
                     profiles.append(("配置 " + str(len(profiles) + 1), entry.path))
+            except OSError:
+                if failures is None:
+                    raise
+                failures.append(entry.path)
     return profiles
+
+
+def wallet_container(extension_id):
+    if extension_id in ("hnfanknocfeofbddgcijnmhnfnkdnaad", "aiifbnbfobpmeekipheeijimdpnlpgpp",
+                        "gjagmgiddbbciopjhllkdnddhcglnemk"):
+        return r"Local Storage\leveldb"
+    if extension_id == "opcgpfmipidbgpenhmajoajpbobppdil":
+        return "IndexedDB\\chrome-extension_" + extension_id + "_0.indexeddb.leveldb"
+    return "Local Extension Settings\\" + extension_id
+
+
+def check_wallet(directory, extension_id):
+    installed = check_path(os.path.join(directory, "Extensions", extension_id))
+    if installed["status"] != "present":
+        return installed
+    container = wallet_container(extension_id)
+    count = 0
+    try:
+        with os.scandir(local_path(os.path.join(directory, container))) as entries:
+            for entry in entries:
+                if entry.name.endswith((".ldb", ".sst", ".log")):
+                    local_path(entry.path)
+                    if entry.is_file(follow_symlinks=False):
+                        count += 1
+    except FileNotFoundError:
+        return {"status": "absent", "container": container}
+    except OSError:
+        return {"status": "partial", "matches": count, "container": container}
+    return {"status": "matched" if count else "absent", "matches": count, "container": container}
 
 
 def scan_browsers(wallet_ids, skip_counts=False, skip_wallets=False):
@@ -296,8 +342,9 @@ def scan_browsers(wallet_ids, skip_counts=False, skip_wallets=False):
     for browser, template, flat in browser_roots():
         try:
             root = expand(template)
-            profiles = browser_profiles(root, flat)
-            coverage.append({"browser": browser, "status": "present" if profiles else "absent"})
+            failures = []
+            profiles = browser_profiles(root, flat, failures)
+            coverage.append({"browser": browser, "status": "partial" if failures else "present" if profiles else "absent"})
             for profile, directory in profiles:
                 if not skip_counts:
                     for store, filename in (("passwords", "Login Data"), ("passwords", "Login Data For Account"),
@@ -305,16 +352,257 @@ def scan_browsers(wallet_ids, skip_counts=False, skip_wallets=False):
                         result = browser_database(os.path.join(directory, filename), store)
                         databases.append({"browser": browser, "profile": profile, "store": store,
                                           "database": filename, **result})
-                if not skip_wallets:
+                if not skip_wallets and browser == "Chrome":
                     for extension_id in wallet_ids:
                         if not re.fullmatch(r"[a-p]{32}", extension_id):
                             continue
-                        result = check_path(os.path.join(directory, "Extensions", extension_id))
+                        result = check_wallet(directory, extension_id)
                         if result["status"] != "absent":
                             wallets.append({"browser": browser, "profile": profile, "id": extension_id, **result})
         except (OSError, ValueError):
             coverage.append({"browser": browser, "status": "unreadable"})
     return databases, wallets, coverage
+
+
+def target_result(label, category, kind, result):
+    return {"template": label, "category": category, "report_category": category, "kind": kind, **result}
+
+
+def project_filename(name):
+    name = name.lower()
+    if name.endswith((".example", ".sample", ".template")):
+        return False
+    return (name in (".env", "mcp.json", ".mcp.json", "docker-compose.yml", "docker-compose.yaml", "config.ini")
+            or ".env." in name or name.endswith((".env", ".tfvars", ".tfvars.json"))
+            or re.fullmatch(r"appsettings.*\.json|application.*\.(?:ya?ml|properties)|credentials.*\.json|service-account.*\.json|secrets\..+", name) is not None)
+
+
+def scan_project_files(template):
+    count, incomplete = 0, False
+
+    def walk(directory, depth):
+        nonlocal count, incomplete
+        try:
+            with os.scandir(local_path(directory)) as entries:
+                for entry in entries:
+                    try:
+                        if entry.name.lower() in ("node_modules", ".git"):
+                            continue
+                        local_path(entry.path)
+                        if entry.is_dir(follow_symlinks=False):
+                            if depth < 2:
+                                walk(entry.path, depth + 1)
+                        elif entry.is_file(follow_symlinks=False) and project_filename(entry.name):
+                            count += 1
+                    except OSError:
+                        incomplete = True
+        except OSError:
+            incomplete = True
+
+    initial = check_path(template)
+    if initial["status"] != "present":
+        return initial
+    walk(expand(template), 0)
+    return {"status": "partial" if incomplete else "matched" if count else "absent", "matches": count}
+
+
+def registry_values(hive, path):
+    with winreg.OpenKey(hive, path) as key:
+        for index in range(winreg.QueryInfoKey(key)[1]):
+            yield winreg.EnumValue(key, index)
+
+
+def scan_environment(rules):
+    results = []
+    scopes = [("process", ((k, v, None) for k, v in os.environ.items())),
+              ("HKCU", registry_values(winreg.HKEY_CURRENT_USER, r"Environment")),
+              ("HKLM", registry_values(winreg.HKEY_LOCAL_MACHINE,
+                                        r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment"))]
+    for scope, values in scopes:
+        count = 0
+        try:
+            for name, value, _ in values:
+                if environment_candidate(name, value, rules):
+                    count += 1
+                    results.append(target_result("env:" + scope + ":" + name, "环境变量", "environment", {"status": "present"}))
+        except FileNotFoundError:
+            pass
+        except OSError:
+            results.append(target_result("env:" + scope, "环境变量", "config", {"status": "partial", "matches": count}))
+            continue
+        if not count:
+            results.append(target_result("env:" + scope, "环境变量", "config", {"status": "absent"}))
+    return results
+
+
+def credential_manager_count():
+    advapi = ctypes.WinDLL("advapi32", use_last_error=True)
+    advapi.CredEnumerateW.argtypes = [wt.LPCWSTR, wt.DWORD, ctypes.POINTER(wt.DWORD), ctypes.POINTER(ctypes.c_void_p)]
+    advapi.CredEnumerateW.restype = wt.BOOL
+    advapi.CredFree.argtypes = [ctypes.c_void_p]
+    advapi.CredFree.restype = None
+    count, buffer = wt.DWORD(), ctypes.c_void_p()
+    if not advapi.CredEnumerateW(None, 0, ctypes.byref(count), ctypes.byref(buffer)):
+        return {"status": "absent" if ctypes.get_last_error() == 1168 else "unreadable"}
+    try:
+        # 只取数量，不解引用任何 CredentialBlob 或目标名称。
+        return {"status": "matched" if count.value else "absent", "matches": count.value}
+    finally:
+        advapi.CredFree(buffer)
+
+
+def scan_gpg():
+    label = "$GNUPGHOME"
+    directory = os.environ.get("GNUPGHOME")
+    if not directory:
+        label = r"HKCU\Software\GNU\GnuPG:HomeDir"
+        try:
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\GNU\GnuPG") as key:
+                directory, _ = winreg.QueryValueEx(key, "HomeDir")
+        except FileNotFoundError:
+            directory = None
+        except OSError:
+            return [target_result(label, "SSH、GPG 与密钥", "config", {"status": "unreadable"})]
+    if not directory:
+        directory, label = r"%APPDATA%\gnupg", r"%APPDATA%\gnupg"
+    return [target_result(label + "\\" + suffix, "SSH、GPG 与密钥", "key_material",
+                          check_path(str(directory) + "\\" + suffix))
+            for suffix in ("pubring.kbx", "secring.gpg", r"private-keys-v1.d\*.key")]
+
+
+def scan_firefox():
+    results = []
+    label = r"%APPDATA%\Mozilla\Firefox\Profiles"
+    try:
+        failures = []
+        profiles = browser_profiles(expand(label), failures=failures)
+        for index, (_, directory) in enumerate(profiles, 1):
+            for filename in ("key4.db", "logins.json"):
+                path = os.path.join(directory, filename)
+                result = check_path(path)
+                if result["status"] == "present":
+                    try:
+                        if os.stat(local_path(path)).st_size > SAMPLE_MAX_READ_BYTES:
+                            result = {"status": "over_cap"}
+                    except OSError:
+                        result = {"status": "unreadable"}
+                results.append(target_result(label + "\\[" + str(index) + "]\\" + filename, "浏览器", "credential",
+                                             result))
+        if failures or not profiles:
+            results.append(target_result(label, "浏览器", "credential", {"status": "partial" if failures else "absent"}))
+    except UnsetEnvironmentError:
+        results.append(target_result(label, "浏览器", "credential", {"status": "unset"}))
+    except OSError:
+        results.append(target_result(label, "浏览器", "credential", {"status": "unreadable"}))
+    return results
+
+
+def scan_kube():
+    value = os.environ.get("KUBECONFIG")
+    if not value:
+        return [target_result("$KUBECONFIG", "云服务与运维", "credential", {"status": "unset"})]
+    return [target_result("$KUBECONFIG[" + str(i) + "]", "云服务与运维", "credential", check_path(path))
+            for i, path in enumerate(filter(None, value.split(";")), 1)]
+
+
+def scan_ssh_references():
+    results, seen = [], set()
+    category = "SSH、GPG 与密钥"
+
+    def read_config(template, depth):
+        if depth > 3:
+            return
+        label = r"~\.ssh\config" if depth == 0 else "SSH Include [" + str(len(seen) + 1) + "]"
+        try:
+            path = local_path(expand(template))
+            if os.path.normcase(path) in seen:
+                return
+            seen.add(os.path.normcase(path))
+            # 配置只用于定位 IdentityFile；私钥文件不打开。
+            with open(path, "r", encoding="utf-8-sig", errors="replace") as stream:
+                content = stream.read(4 * 1024 * 1024 + 1)
+            if len(content) > 4 * 1024 * 1024:
+                raise OSError("config_too_large")
+            active_host = False
+            identity = None
+
+            def add_identity():
+                if identity:
+                    results.append(target_result("SSH IdentityFile [" + str(len(results) + 1) + "]", category,
+                                                 "key_material", check_path(identity)))
+
+            for line in content.splitlines():
+                match = re.match(r"^\s*([A-Za-z0-9]+)\s+(.+)$", line)
+                if not match:
+                    continue
+                key, value = match.groups()
+                value = re.sub(r"\s+#.*$|^#.*$", "", value.strip().strip("\"'"))
+                key = key.lower()
+                if key == "host":
+                    add_identity()
+                    identity = None
+                    active_host = any(not re.search(r"[*?]", alias) for alias in value.split())
+                elif key == "identityfile" and active_host:
+                    identity = value
+                elif key == "include":
+                    for include in value.split():
+                        if not include.startswith(("/", "~")):
+                            include = "~\\.ssh\\" + include
+                        read_config(include, depth + 1)
+            add_identity()
+        except FileNotFoundError:
+            if depth:
+                results.append(target_result(label, category, "config", {"status": "absent"}))
+        except UnsetEnvironmentError:
+            results.append(target_result(label, category, "config", {"status": "unset"}))
+        except OSError:
+            results.append(target_result(label, category, "config", {"status": "unreadable"}))
+
+    read_config(r"~\.ssh\config", 0)
+    return results
+
+
+def scan_sessions():
+    results = []
+    for tool, path in (("PuTTY", r"Software\SimonTatham\PuTTY\Sessions"),
+                       ("WinSCP", r"Software\Martin Prikryl\WinSCP 2\Sessions")):
+        try:
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, path) as root:
+                for index in range(winreg.QueryInfoKey(root)[0]):
+                    label = tool + " [" + str(index + 1) + "]"
+                    try:
+                        with winreg.OpenKey(root, winreg.EnumKey(root, index)) as session:
+                            for name in ("PublicKeyFile", "Password") if tool == "WinSCP" else ("PublicKeyFile",):
+                                try:
+                                    value, _ = winreg.QueryValueEx(session, name)
+                                except FileNotFoundError:
+                                    continue
+                                if isinstance(value, str) and value:
+                                    result = check_path(value) if name == "PublicKeyFile" else {"status": "present"}
+                                    results.append(target_result(label + ":" + name, "SSH、GPG 与密钥",
+                                                                 "key_material" if name == "PublicKeyFile" else "store", result))
+                    except OSError:
+                        results.append(target_result(label, "SSH、GPG 与密钥", "config", {"status": "unreadable"}))
+        except FileNotFoundError:
+            continue
+        except OSError:
+            results.append(target_result(tool + " Sessions", "SSH、GPG 与密钥", "config", {"status": "unreadable"}))
+    return results
+
+
+def scan_additional(targets):
+    results = []
+    for template in targets.get("project_roots", []):
+        results.append(target_result(template, "项目配置", "config", scan_project_files(template)))
+    if targets.get("additional_surfaces"):
+        results.extend(scan_environment(targets.get("detector_rules", [])))
+        results.append(target_result("Windows Credential Manager", "Windows 凭据管理器", "store", credential_manager_count()))
+        results.extend(scan_kube())
+        results.extend(scan_gpg())
+        results.extend(scan_firefox())
+        results.extend(scan_ssh_references())
+        results.extend(scan_sessions())
+    return results
 
 
 def owns_console():
@@ -394,6 +682,7 @@ def main(argv=None):
         if item.get("scope") != "excluded":
             registry.append({"key": normalize(item["key"]), "kind": item.get("kind", "config"),
                              **check_registry(item["key"])})
+    results.extend(scan_additional(targets))
 
     say("cli.step2", flush=True)
     skip_counts = args.quick or args.no_browser_count

@@ -2,12 +2,13 @@
  "source": {
   "sample_sha256": "cc0ad05bfe85940a6067b3a72c182d3953339129206634141926d5d0b35973ec",
   "strings_count": 1790,
-  "path_templates": 224,
-  "registry_keys": 4
+  "path_templates": 269,
+  "registry_keys": 4,
+  "keyscan_sources_paths": 234
  },
  "paths": [
   {
-   "idx": 1,
+   "idx": 1342,
    "template": "~\\\\.fly\\\\config.yml",
    "category": "其它开发工具",
    "report_category": "其他开发工具",
@@ -57,13 +58,6 @@
    "kind": "credential"
   },
   {
-   "idx": 66,
-   "template": "%USERPROFILE%\\\\source",
-   "category": "其它开发工具",
-   "report_category": "普通目录",
-   "kind": "general"
-  },
-  {
    "idx": 69,
    "template": "~\\\\.config\\\\git\\\\credentials",
    "category": "Git / VCS",
@@ -90,13 +84,6 @@
    "category": "其它开发工具",
    "report_category": "其他开发工具",
    "kind": "credential"
-  },
-  {
-   "idx": 139,
-   "template": "%USERPROFILE%\\\\Documents",
-   "category": "其它开发工具",
-   "report_category": "普通目录",
-   "kind": "general"
   },
   {
    "idx": 151,
@@ -464,13 +451,6 @@
    "kind": "credential"
   },
   {
-   "idx": 489,
-   "template": "%APPDATA%\\\\gnupg",
-   "category": "SSH / GPG / 密钥",
-   "report_category": "SSH、GPG 与密钥",
-   "kind": "key_material"
-  },
-  {
    "idx": 497,
    "template": "~\\\\.copilot\\\\mcp-config.json",
    "category": "AI / LLM 工具",
@@ -642,8 +622,8 @@
    "idx": 694,
    "template": "~\\\\.kube\\\\config",
    "category": "包仓库 / CI",
-   "report_category": "软件包与 CI",
-   "kind": "config"
+   "report_category": "云服务与运维",
+   "kind": "credential"
   },
   {
    "idx": 702,
@@ -763,13 +743,6 @@
    "category": "云 / DevOps",
    "report_category": "云服务与运维",
    "kind": "config"
-  },
-  {
-   "idx": 829,
-   "template": "%APPDATA%\\\\nikke_launcher",
-   "category": "其它开发工具",
-   "report_category": "程序与辅助文件",
-   "kind": "program"
   },
   {
    "idx": 831,
@@ -1001,13 +974,6 @@
    "category": "其它开发工具",
    "report_category": "其他开发工具",
    "kind": "config"
-  },
-  {
-   "idx": 1102,
-   "template": "%USERPROFILE%\\\\Programming",
-   "category": "其它开发工具",
-   "report_category": "普通目录",
-   "kind": "general"
   },
   {
    "idx": 1105,
@@ -1276,20 +1242,6 @@
    "kind": "config"
   },
   {
-   "idx": 1421,
-   "template": "%USERPROFILE%\\\\code",
-   "category": "其它开发工具",
-   "report_category": "普通目录",
-   "kind": "general"
-  },
-  {
-   "idx": 1432,
-   "template": "%USERPROFILE%\\\\dev",
-   "category": "其它开发工具",
-   "report_category": "普通目录",
-   "kind": "general"
-  },
-  {
    "idx": 1437,
    "template": "~\\\\.gemini\\\\settings.json",
    "category": "AI / LLM 工具",
@@ -1486,13 +1438,6 @@
    "kind": "config"
   },
   {
-   "idx": 1733,
-   "template": "%APPDATA%\\\\nikke_launcher_hmt",
-   "category": "其它开发工具",
-   "report_category": "程序与辅助文件",
-   "kind": "program"
-  },
-  {
    "idx": 1736,
    "template": "~\\\\.pg_service.conf",
    "category": "其它开发工具",
@@ -1526,13 +1471,6 @@
    "category": "AI / LLM 工具",
    "report_category": "AI 工具",
    "kind": "config"
-  },
-  {
-   "idx": 1744,
-   "template": "%USERPROFILE%\\\\Desktop",
-   "category": "其它开发工具",
-   "report_category": "普通目录",
-   "kind": "general"
   },
   {
    "idx": 1746,
@@ -1575,6 +1513,380 @@
    "category": "SSH / GPG / 密钥",
    "report_category": "编辑器与插件",
    "kind": "config"
+  },
+  {
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config",
+   "template": "$AWS_CONFIG_FILE",
+   "idx": 1549
+  },
+  {
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential",
+   "template": "$AWS_SHARED_CREDENTIALS_FILE",
+   "idx": 100
+  },
+  {
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config",
+   "template": "$ARGOCD_CONFIG_DIR\\config",
+   "idx": 1149
+  },
+  {
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential",
+   "template": "$AZURE_CONFIG_DIR\\accessTokens.json",
+   "idx": 494
+  },
+  {
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential",
+   "template": "$AZURE_CONFIG_DIR\\msal_token_cache.bin",
+   "idx": 1678
+  },
+  {
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential",
+   "template": "$AZURE_CONFIG_DIR\\service_principal_entries.bin",
+   "idx": 326
+  },
+  {
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config",
+   "template": "$B2_ACCOUNT_INFO",
+   "idx": 1385
+  },
+  {
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config",
+   "template": "$BUILDKITE_AGENT_CONFIG",
+   "idx": 471
+  },
+  {
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "credential",
+   "template": "$CARGO_HOME\\credentials.toml",
+   "idx": 282
+  },
+  {
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config",
+   "template": "$CLAUDE_CONFIG_DIR\\.claude.json",
+   "idx": 191
+  },
+  {
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential",
+   "template": "$CLAUDE_CONFIG_DIR\\.credentials.json",
+   "idx": 1282
+  },
+  {
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config",
+   "template": "$CLAUDE_CONFIG_DIR\\settings.json",
+   "idx": 115
+  },
+  {
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "credential",
+   "template": "$COMPOSER_HOME\\auth.json",
+   "idx": 1302
+  },
+  {
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config",
+   "template": "$DATABRICKS_CONFIG_FILE",
+   "idx": 55
+  },
+  {
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential",
+   "template": "$DSH_HOME\\.credentials.yaml",
+   "idx": 614
+  },
+  {
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config",
+   "template": "$DOCKER_CONFIG\\config.json",
+   "idx": 181
+  },
+  {
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config",
+   "template": "$XDG_CONFIG_HOME\\configstore\\firebase-tools.json",
+   "idx": 1719
+  },
+  {
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential",
+   "template": "$GEMINI_CLI_HOME\\.gemini\\oauth_creds.json",
+   "idx": 639
+  },
+  {
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config",
+   "template": "$GEMINI_CLI_HOME\\.gemini\\settings.json",
+   "idx": 943
+  },
+  {
+   "category": "Git / VCS",
+   "report_category": "Git 与代码托管",
+   "kind": "config",
+   "template": "$GH_CONFIG_DIR\\hosts.yml",
+   "idx": 47
+  },
+  {
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config",
+   "template": "$COPILOT_HOME\\mcp-config.json",
+   "idx": 428
+  },
+  {
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential",
+   "template": "$CLOUDSDK_CONFIG\\access_tokens.db",
+   "idx": 1286
+  },
+  {
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential",
+   "template": "$CLOUDSDK_CONFIG\\application_default_credentials.json",
+   "idx": 124
+  },
+  {
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential",
+   "template": "$GOOGLE_APPLICATION_CREDENTIALS",
+   "idx": 1266
+  },
+  {
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential",
+   "template": "$CLOUDSDK_CONFIG\\credentials.db",
+   "idx": 1040
+  },
+  {
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config",
+   "template": "$GRADLE_USER_HOME\\gradle.properties",
+   "idx": 1475
+  },
+  {
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config",
+   "template": "$HELM_REPOSITORY_CONFIG",
+   "idx": 358
+  },
+  {
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config",
+   "template": "$HELM_CONFIG_HOME\\repositories.yaml",
+   "idx": 1520
+  },
+  {
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential",
+   "template": "$HF_HOME\\stored_tokens",
+   "idx": 1372
+  },
+  {
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential",
+   "template": "$HF_HOME\\token",
+   "idx": 1551
+  },
+  {
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential",
+   "template": "$HF_TOKEN_PATH",
+   "idx": 1376
+  },
+  {
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config",
+   "template": "$JFROG_CLI_HOME_DIR\\jfrog-cli.conf.v6",
+   "idx": 1730
+  },
+  {
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential",
+   "template": "$KAGGLE_CONFIG_DIR\\access_token",
+   "idx": 1433
+  },
+  {
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential",
+   "template": "$KAGGLE_CONFIG_DIR\\kaggle.json",
+   "idx": 234
+  },
+  {
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config",
+   "template": "$KIMI_SHARE_DIR\\config.toml",
+   "idx": 1550
+  },
+  {
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config",
+   "template": "$MODAL_CONFIG_PATH",
+   "idx": 133
+  },
+  {
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config",
+   "template": "%ProgramFiles(x86)%\\NuGet\\Config\\NuGet.Config",
+   "idx": 975
+  },
+  {
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential",
+   "template": "$CODEX_HOME\\auth.json",
+   "idx": 1027
+  },
+  {
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config",
+   "template": "$CODEX_HOME\\config.toml",
+   "idx": 160
+  },
+  {
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config",
+   "template": "$OCI_CONFIG_FILE",
+   "idx": 1545
+  },
+  {
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config",
+   "template": "$PGSERVICEFILE",
+   "idx": 846
+  },
+  {
+   "category": "数据库 / 数据存储",
+   "report_category": "数据库与数据存储",
+   "kind": "credential",
+   "template": "$PGPASSFILE",
+   "idx": 1273
+  },
+  {
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "credential",
+   "template": "$PULUMI_HOME\\credentials.json",
+   "idx": 182
+  },
+  {
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config",
+   "template": "$PIP_CONFIG_FILE",
+   "idx": 755
+  },
+  {
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config",
+   "template": "$SAKURA_PROFILE_DIR\\*\\config.json",
+   "idx": 954
+  },
+  {
+   "category": "数据库 / 数据存储",
+   "report_category": "数据库与数据存储",
+   "kind": "config",
+   "template": "$SNOWFLAKE_HOME\\config.toml",
+   "idx": 1536
+  },
+  {
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config",
+   "template": "$TF_CLI_CONFIG_FILE",
+   "idx": 1368
+  },
+  {
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config",
+   "template": "$TWILIO_CONFIG_DIR\\config.json",
+   "idx": 216
+  },
+  {
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config",
+   "template": "$NPM_CONFIG_USERCONFIG",
+   "idx": 1333
+  },
+  {
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config",
+   "template": "$RCLONE_CONFIG",
+   "idx": 711
+  },
+  {
+   "template": "%APPDATA%\\nikke_launcher\\psd.dat",
+   "category": "NIKKE",
+   "report_category": "NIKKE",
+   "kind": "credential"
+  },
+  {
+   "template": "%APPDATA%\\nikke_launcher\\last_user.dat",
+   "category": "NIKKE",
+   "report_category": "NIKKE",
+   "kind": "credential"
+  },
+  {
+   "template": "%APPDATA%\\nikke_launcher_hmt\\psd.dat",
+   "category": "NIKKE",
+   "report_category": "NIKKE",
+   "kind": "credential"
+  },
+  {
+   "template": "%APPDATA%\\nikke_launcher_hmt\\last_user.dat",
+   "category": "NIKKE",
+   "report_category": "NIKKE",
+   "kind": "credential"
   }
  ],
  "registry": [
@@ -1633,5 +1945,53 @@
   "dlcobpjiigpikoobohmabehhmhfoodbb",
   "phkbamefinggmakgklpkljjmgibohnba",
   "gjagmgiddbbciopjhllkdnddhcglnemk"
+ ],
+ "project_roots": [
+  "%USERPROFILE%\\source",
+  "%USERPROFILE%\\code",
+  "%USERPROFILE%\\dev",
+  "%USERPROFILE%\\Programming",
+  "%USERPROFILE%\\Documents",
+  "%USERPROFILE%\\Desktop"
+ ],
+ "additional_surfaces": true,
+ "detector_rules": [
+  {"name": "anthropic", "steps": [["lit", ["sk-ant-api03-", "sk-ant-admin01-"]], ["run", "A-Za-z0-9_-", 20, -1]], "boundary": true},
+  {"name": "aws-access-key", "steps": [["lit", ["AKIA", "ASIA", "ABIA", "ACCA", "A3TA", "A3TB", "A3TC", "A3TD", "A3TE", "A3TF", "A3TG", "A3TH", "A3TI", "A3TJ", "A3TK", "A3TL", "A3TM", "A3TN", "A3TO", "A3TP", "A3TQ", "A3TR", "A3TS", "A3TT", "A3TU", "A3TV", "A3TW", "A3TX", "A3TY", "A3TZ", "A3T0", "A3T1", "A3T2", "A3T3", "A3T4", "A3T5", "A3T6", "A3T7", "A3T8", "A3T9"]], ["run", "A-Z2-7", 16, 16]], "boundary": true},
+  {"name": "databricks", "steps": [["lit", "dapi"], ["run", "a-f0-9", 32, 32]], "boundary": true},
+  {"name": "digitalocean", "steps": [["lit", ["doo_v1_", "dop_v1_", "dor_v1_"]], ["run", "a-f0-9", 64, 64]], "boundary": true},
+  {"name": "doppler", "steps": [["lit", "dp.pt."], ["run", "a-z0-9", 43, 43]], "boundary": true},
+  {"name": "gcp-api-key", "steps": [["lit", "AIza"], ["run", "A-Za-z0-9_-", 35, 35]], "boundary": true},
+  {"name": "github", "steps": [["lit", ["ghp_", "gho_", "ghu_", "ghs_", "ghr_"]], ["run", "A-Za-z0-9_", 36, 36]], "boundary": true},
+  {"name": "github-fine-grained", "steps": [["lit", "github_pat_"], ["run", "A-Za-z0-9_", 82, 82]], "boundary": true},
+  {"name": "gitlab", "steps": [["lit", "glpat-"], ["run", "A-Za-z0-9_-", 20, 20]], "boundary": true},
+  {"name": "groq", "steps": [["lit", "gsk_"], ["run", "A-Za-z0-9", 20, -1]], "boundary": true},
+  {"name": "huggingface", "steps": [["lit", "hf_"], ["run", "A-Za-z0-9", 30, -1]], "boundary": true},
+  {"name": "new-relic-key", "steps": [["lit", "NRAK-"], ["run", "A-Za-z0-9", 27, 27]], "boundary": true},
+  {"name": "new-relic-js", "steps": [["lit", "NRJS-"], ["run", "a-f0-9", 19, 19]], "boundary": true},
+  {"name": "notion", "steps": [["lit", "ntn_"], ["run", "0-9", 11, 11], ["run", "A-Za-z0-9", 35, 35]], "boundary": true},
+  {"name": "npm", "steps": [["lit", "npm_"], ["run", "a-z0-9", 36, 36]], "boundary": true},
+  {"name": "openai-project", "steps": [["lit", ["sk-proj-", "sk-svcacct-", "sk-admin-"]], ["run", "A-Za-z0-9_-", 20, -1]], "boundary": true},
+  {"name": "perplexity", "steps": [["lit", "pplx-"], ["run", "A-Za-z0-9", 48, 48]], "boundary": true},
+  {"name": "postman", "steps": [["lit", "PMAK-"], ["run", "a-f0-9", 24, 24], ["lit", "-"], ["run", "a-f0-9", 34, 34]], "boundary": true},
+  {"name": "pulumi", "steps": [["lit", "pul-"], ["run", "a-f0-9", 40, 40]], "boundary": true},
+  {"name": "pypi", "steps": [["lit", "pypi-AgEIcHlwaS5vcmc"], ["run", "A-Za-z0-9_-", 50, 1000]], "boundary": true},
+  {"name": "replicate", "steps": [["lit", "r8_"], ["run", "A-Za-z0-9", 20, -1]], "boundary": true},
+  {"name": "rubygems", "steps": [["lit", "rubygems_"], ["run", "a-f0-9", 48, 48]], "boundary": true},
+  {"name": "sendgrid", "steps": [["lit", "SG."], ["run", "A-Za-z0-9=_.-", 66, 66]], "boundary": true},
+  {"name": "sourcegraph", "steps": [["lit", "sgp_"], ["run", "a-f0-9", 40, 40]], "boundary": true},
+  {"name": "stripe", "steps": [["lit", ["sk_test_", "sk_live_", "sk_prod_", "rk_test_", "rk_live_", "rk_prod_"]], ["run", "A-Za-z0-9", 10, 99]], "boundary": true},
+  {"name": "supabase", "steps": [["lit", "sbp_"], ["run", "A-Za-z0-9", 20, -1]], "boundary": true},
+  {"name": "twilio", "steps": [["lit", "SK"], ["run", "0-9a-fA-F", 32, 32]], "boundary": true},
+  {"name": "vault-hvs", "steps": [["lit", "hvs."], ["run", "A-Za-z0-9_-", 90, 120]], "boundary": true},
+  {"name": "vault-hvb", "steps": [["lit", "hvb."], ["run", "A-Za-z0-9_-", 138, 300]], "boundary": true},
+  {"name": "xai", "steps": [["lit", "xai-"], ["run", "A-Za-z0-9", 20, -1]], "boundary": true},
+  {"name": "google-oauth", "steps": [["lit", "ya29."], ["run", "A-Za-z0-9_-", 20, -1]], "boundary": true},
+  {"name": "sentry-user", "steps": [["lit", "sntryu_"], ["run", "a-f0-9", 64, 64]], "boundary": true},
+  {"name": "sentry-org", "steps": [["lit", "sntrys_eyJpYXQiO"], ["run", "A-Za-z0-9+/=_-", 20, -1]], "boundary": true},
+  {"name": "slack", "steps": [["lit", ["xoxb-", "xoxa-", "xoxp-", "xoxr-", "xoxs-"]], ["run", "A-Za-z0-9-", 10, -1]], "boundary": true},
+  {"name": "slack-webhook", "steps": [["lit", ["https://hooks.slack.com/services/", "https://hooks.slack.com/workflows/", "https://hooks.slack.com/triggers/"]], ["run", "A-Za-z0-9+/", 43, 56]], "boundary": false},
+  {"name": "age", "steps": [["lit", ["AGE-SECRET-KEY-1", "AGE-SECRET-KEY-PQ-1"]], ["run", "QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L", 58, 58]], "boundary": true},
+  {"name": "jwt", "steps": [["lit", "eyJ"], ["run", "A-Za-z0-9_-", 10, -1], ["lit", "."], ["run", "A-Za-z0-9_-", 10, -1], ["lit", "."], ["run", "A-Za-z0-9_-", 10, -1]], "boundary": true}
  ]
 }
