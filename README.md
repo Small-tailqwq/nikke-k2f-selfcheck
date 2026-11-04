@@ -1,3 +1,5 @@
+**中文** | [English](README.en.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
+
 # NIKKE K2F 泄露面自查工具
 
 依据 NIKKE Launcher 供应链事件中 K2F 样本的采集清单，检查这些位置在本机是否存在，统计浏览器密码与 Cookie 的加密方式，生成本地 HTML 报告。
@@ -26,6 +28,7 @@ python k2f_selfcheck.py
 
 | 参数 | 用途 |
 |---|---|
+| `--lang` | 报告与输出语言：`zh`、`en`、`ja`、`ko`。默认跟随 Windows 显示语言，其他语言的系统使用英语 |
 | `--out` | 指定报告路径（`.html` 或 `.htm`）。文件已存在时不会覆盖 |
 | `--no-open` | 只保存报告，不打开浏览器 |
 | `--quick` | 跳过浏览器数据库和钱包扩展，只检查路径 |

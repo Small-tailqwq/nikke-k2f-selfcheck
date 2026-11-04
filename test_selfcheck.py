@@ -12,7 +12,8 @@ import unittest
 from unittest.mock import patch
 from html.parser import HTMLParser
 
-import k2f_report as scanner_report
+import re
+import k2f_i18n
 import k2f_selfcheck as scanner
 from k2f_report import render_report
 
@@ -268,6 +269,68 @@ class LocalReportTests(unittest.TestCase):
         self.assertIn(".ack,.gate-act label{visibility:hidden;animation:gate-unlock 0s 6s forwards}", html)
         self.assertNotIn("<form", html)
 
+    def full_report(self):
+        return {"generated_at": "2026-11-04 12:00:00",
+                "results": [{"template": r"~\.codex\auth.json", "report_category": "AI 工具", "kind": "credential", "status": "present"},
+                            {"template": r"~\.aws\credentials", "report_category": "云服务与运维", "kind": "credential", "status": "unreadable"},
+                            {"template": r"~\**\*.json", "report_category": "编辑器与插件", "kind": "config", "status": "partial", "matches": 2},
+                            {"template": r"~\.zsh_history", "report_category": "Shell 历史与配置", "kind": "config", "status": "absent"},
+                            {"template": "%USERPROFILE%", "report_category": "普通目录", "kind": "general", "status": "present"}],
+                "registry": [{"key": r"Software\GNU\GnuPG", "status": "present", "hives": ["HKCU"], "partial": True}],
+                "databases": [{"browser": "Chrome", "profile": "配置 1", "store": "passwords", "database": "Login Data", "status": "partial", "wal": True,
+                               "counts": {"total": 3, "v10": 1, "v20": 1, "other": 1},
+                               "records": [{"index": 1, "encryption": "v10", "site": "example.com", "identifier": "a•••e"},
+                                           {"index": 2, "encryption": "v20", "site": "站点未知", "identifier": "未填写"},
+                                           {"index": 3, "encryption": "other", "site": "example.org", "identifier": "••••"}]},
+                              {"browser": "Opera", "profile": "主配置", "store": "cookies", "database": r"Network\Cookies", "status": "read",
+                               "counts": {"total": 2, "plain": 1, "empty": 1},
+                               "records": [{"index": 1, "encryption": "plain", "site": "example.net", "identifier": "s•••d"},
+                                           {"index": 2, "encryption": "empty", "site": "example.net", "identifier": "x•••y"}]},
+                              {"browser": "Edge", "profile": "配置 2", "store": "cookies", "database": r"Network\Cookies", "status": "unreadable"},
+                              {"browser": "Edge", "profile": "配置 2", "store": "passwords", "database": "Login Data", "status": "absent"}],
+                "coverage": [{"browser": "Chrome", "status": "present"}, {"browser": "Brave", "status": "absent"}, {"browser": "Edge", "status": "unreadable"}],
+                "wallets": [{"browser": "Chrome", "profile": "配置 1", "id": "a" * 32, "status": "present"},
+                            {"browser": "Chrome", "profile": "配置 1", "id": "b" * 32, "status": "unreadable"}]}
+
+    def test_every_text_has_four_languages_with_matching_placeholders(self):
+        tables = [k2f_i18n.TEXT, k2f_i18n.CATEGORY_NAMES, k2f_i18n.ACTIONS]
+        tables += [{key + str(i): value[i] for key, value in k2f_i18n.RISK_TEXT.items()} for i in range(3)]
+        for table in tables:
+            for key, values in table.items():
+                self.assertEqual(len(values), len(k2f_i18n.LANGS), key)
+                self.assertTrue(all(values), key)
+                fields = {frozenset(re.findall(r"\{(\w+)\}", v)) for v in values}
+                self.assertEqual(len(fields), 1, key)
+
+    def test_english_and_korean_reports_have_no_chinese_left(self):
+        for lang, attr in (("en", 'lang="en"'), ("ko", 'lang="ko"')):
+            html = render_report(self.full_report(), lang)
+            self.assertIn(attr, html)
+            self.assertEqual(re.findall(r"[\u3400-\u9fff\u3040-\u30ff]+", html), [], lang)
+        html = render_report(self.full_report(), "en")
+        for text in ("Profile 1", "Main profile", "Unknown site", "Got it, view the report", "Incomplete (WAL)", "1 record · 1 site"):
+            self.assertIn(text, html)
+
+    def test_japanese_report_uses_japanese_text(self):
+        html = render_report(self.full_report(), "ja")
+        self.assertIn('lang="ja"', html)
+        for text in ("このレポートについて", "プロファイル 1", "認証情報の場所", "不完全（WAL）"):
+            self.assertIn(text, html)
+        for text in ("配置 1", "关于这份报告", "未完成检查"):
+            self.assertNotIn(text, html)
+
+    def test_language_detection_and_cli_output(self):
+        for langid, lang in ((0x0804, "zh"), (0x0404, "zh"), (0x0409, "en"), (0x0411, "ja"), (0x0412, "ko"), (0x040C, "en")):
+            with patch.object(scanner.k32, "GetUserDefaultUILanguage", return_value=langid):
+                self.assertEqual(scanner.detect_language(), lang)
+        targets = self.root / "targets.json"
+        targets.write_text('{"paths":[],"registry":[],"wallet_extensions":[]}', encoding="utf-8")
+        output = self.root / "report.html"
+        with patch.object(scanner, "scan_browsers", return_value=([], [], [])), contextlib.redirect_stdout(io.StringIO()) as stdout:
+            self.assertEqual(scanner.main(["--targets", str(targets), "--out", str(output), "--no-open", "--lang", "ko"]), 0)
+        self.assertIn("보고서 저장됨", stdout.getvalue())
+        self.assertIn('lang="ko"', output.read_text(encoding="utf-8"))
+
     def test_skipped_counts_are_not_zero_or_safe(self):
         html = render_report({"skip_counts": True, "skip_wallets": True})
         self.assertIn("未检查浏览器数据库", html)
@@ -276,8 +339,9 @@ class LocalReportTests(unittest.TestCase):
 
     def test_generic_directories_do_not_get_credential_actions(self):
         html = render_report({"results": [{"template": "%USERPROFILE%", "report_category": "普通目录", "kind": "general", "status": "present"}]})
-        for action in scanner_report.ACTIONS.values():
-            self.assertNotIn(action, html)
+        for actions in k2f_i18n.ACTIONS.values():
+            for action in actions:
+                self.assertNotIn(action, html)
         self.assertIn("不是凭据位置", html)
 
     def test_main_creates_report_before_opening_and_reads_no_auth_file(self):
@@ -326,7 +390,7 @@ class LocalReportTests(unittest.TestCase):
         targets.write_text('{"paths":[],"registry":[],"wallet_extensions":[]}', encoding="utf-8")
         output = self.root / "report.html"
         with patch.object(scanner, "scan_browsers", return_value=([], [], [])), patch.object(scanner.os, "startfile", side_effect=OSError(SECRET)), contextlib.redirect_stdout(io.StringIO()) as stdout:
-            self.assertEqual(scanner.main(["--targets", str(targets), "--out", str(output)]), 0)
+            self.assertEqual(scanner.main(["--targets", str(targets), "--out", str(output), "--lang", "zh"]), 0)
         self.assertTrue(output.is_file())
         self.assertIn("无法自动打开默认浏览器", stdout.getvalue())
         self.assertNotIn(SECRET, stdout.getvalue())

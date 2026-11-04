@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""K2F 本地泄露面模拟：只读元信息和浏览器加密版本统计，生成脱敏 HTML。"""
+"""K2F 泄露面自查：只读元信息和浏览器加密版本统计，生成脱敏 HTML。"""
 
 import argparse
 import ctypes
@@ -18,6 +18,7 @@ import winreg
 from datetime import datetime
 from urllib.parse import urlsplit
 
+from k2f_i18n import LANGS, t
 from k2f_report import render_report
 
 
@@ -31,6 +32,7 @@ k32.ReadFile.argtypes = [wt.HANDLE, wt.LPVOID, wt.DWORD, ctypes.POINTER(wt.DWORD
 k32.CloseHandle.argtypes = [wt.HANDLE]
 k32.GetConsoleProcessList.argtypes = [ctypes.POINTER(wt.DWORD), wt.DWORD]
 k32.GetConsoleProcessList.restype = wt.DWORD
+k32.GetUserDefaultUILanguage.restype = wt.WORD
 
 
 class LocalOnlyError(OSError):
@@ -326,36 +328,61 @@ def open_report(path):
     os.startfile(local_path(path), "open")
 
 
+def detect_language():
+    """按 Windows 显示语言选择报告语言；中文、日语、韩语以外的系统使用英语。"""
+    try:
+        primary = k32.GetUserDefaultUILanguage() & 0x3FF
+    except (AttributeError, OSError):
+        return "en"
+    return {0x04: "zh", 0x11: "ja", 0x12: "ko"}.get(primary, "en")
+
+
+LANGUAGE = "zh"
+
+
+def say(key, *, file=None, flush=False, prefix="  ", suffix=""):
+    print(prefix + t(LANGUAGE, key) + suffix, file=file, flush=flush)
+
+
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="K2F 本地泄露面模拟 · 只读 · 脱敏 HTML 报告")
-    parser.add_argument("--targets", default=str(Path(__file__).with_name("k2f_targets.json")), help="本地目标清单")
-    parser.add_argument("--out", help="本地 HTML 报告路径（.html 或 .htm）")
-    parser.add_argument("--quick", action="store_true", help="只检查目标元信息，跳过浏览器数据库和钱包扩展")
-    parser.add_argument("--no-browser-count", action="store_true", help="跳过浏览器数据库统计")
-    parser.add_argument("--no-open", action="store_true", help="生成报告后不自动打开浏览器")
-    args = parser.parse_args(argv)
+    global LANGUAGE
     for stream in (sys.stdout, sys.stderr):
         # 输出被重定向到非 UTF-8 代码页（如 CI 的 cp1252）时，替换无法编码的字符而不是崩溃。
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(errors="replace")
+    choices = ("auto",) + LANGS
+    pre = argparse.ArgumentParser(add_help=False)
+    pre.add_argument("--lang", choices=choices, default="auto")
+    known, _ = pre.parse_known_args(argv)
+    LANGUAGE = detect_language() if known.lang == "auto" else known.lang
+    T = lambda key: t(LANGUAGE, key)
+
+    parser = argparse.ArgumentParser(description=T("cli.description"))
+    parser.add_argument("--targets", default=str(Path(__file__).with_name("k2f_targets.json")), help=T("cli.targets"))
+    parser.add_argument("--out", help=T("cli.out"))
+    parser.add_argument("--quick", action="store_true", help=T("cli.quick"))
+    parser.add_argument("--no-browser-count", action="store_true", help=T("cli.no_browser_count"))
+    parser.add_argument("--no-open", action="store_true", help=T("cli.no_open"))
+    parser.add_argument("--lang", choices=choices, default="auto", help=T("cli.lang"))
+    args = parser.parse_args(argv)
     if sys.version_info < (3, 11) or not hasattr(sqlite3.Connection, "deserialize"):
-        print("需要包含 SQLite deserialize 支持的 Python 3.11+。", file=sys.stderr)
+        say("cli.need_python", file=sys.stderr, prefix="")
         return 2
     now = datetime.now()
     try:
         output = local_path(args.out or ("K2F_selfcheck_" + now.strftime("%Y%m%d_%H%M%S_%f") + ".html"))
         if Path(output).suffix.lower() not in (".html", ".htm"):
-            parser.error("--out 必须使用 .html 或 .htm 扩展名")
+            parser.error(T("cli.bad_ext"))
         with open(local_path(args.targets), encoding="utf-8") as stream:
             targets = json.load(stream)
     except (OSError, ValueError):
-        print("无法读取本地目标清单或使用指定输出路径；网络位置和重解析点会被跳过。", file=sys.stderr)
+        say("cli.bad_input", file=sys.stderr, prefix="")
         return 2
 
-    print("\n  K2F · 本地泄露面模拟\n  不上传数据 / 不解密凭据 / 不判定感染\n")
+    say("cli.banner", prefix="\n  ", suffix="\n")
     ensure_environment()
     results = []
-    print("  [1/3] 检查应用与鉴权目标…", flush=True)
+    say("cli.step1", flush=True)
     for item in targets.get("paths", []):
         if item.get("scope") == "excluded":
             continue
@@ -368,32 +395,32 @@ def main(argv=None):
             registry.append({"key": normalize(item["key"]), "kind": item.get("kind", "config"),
                              **check_registry(item["key"])})
 
-    print("  [2/3] 统计浏览器加密版本与钱包扩展…", flush=True)
+    say("cli.step2", flush=True)
     skip_counts = args.quick or args.no_browser_count
     databases, wallets, coverage = scan_browsers(targets.get("wallet_extensions", []), skip_counts, args.quick)
     report = {"generated_at": now.strftime("%Y-%m-%d %H:%M:%S"), "results": results,
               "registry": registry, "databases": databases, "wallets": wallets, "coverage": coverage,
               "skip_counts": skip_counts, "skip_wallets": args.quick}
-    print("  [3/3] 生成脱敏 HTML 报告…", flush=True)
+    say("cli.step3", flush=True)
     try:
         # 独占创建避免覆盖已有报告或用户文件。
         with open(local_path(output), "x", encoding="utf-8") as stream:
-            stream.write(render_report(report))
+            stream.write(render_report(report, LANGUAGE))
     except OSError:
-        print("报告未写入：请使用可写的本地目录和未使用的文件名。", file=sys.stderr)
+        say("cli.write_failed", file=sys.stderr, prefix="")
         return 2
-    print("\n  报告已保存：" + output)
-    print("  仅模拟可被读取的目标，不判断真实泄露。")
+    say("cli.saved", prefix="\n  ", suffix=output)
+    say("cli.note")
     if not args.no_open:
         try:
             open_report(output)
         except OSError:
-            print("  无法自动打开默认浏览器，请手动打开上面的 HTML 文件。")
+            say("cli.open_failed")
     return 0
 
 
 if __name__ == "__main__":
     code = main()
     if getattr(sys, "frozen", False) and owns_console():
-        input("\n  按回车键退出…")
+        input("\n  " + t(LANGUAGE, "cli.press_enter"))
     sys.exit(code)

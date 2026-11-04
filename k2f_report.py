@@ -1,55 +1,73 @@
 """本地 HTML 报告：渲染脱敏定位元信息、聚合计数和可展开明细。页面不含脚本和外部资源。"""
 
 from html import escape
+import re
+
+from k2f_i18n import ACTIONS, CATEGORY_NAMES, HTML_LANG, RISK_TEXT, normalize_lang, pick, t
 
 
 REPORT_ICON = 'data:image/jpeg;base64,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'
 SCANNER_URL = "https://github.com/Sheisback/nikke_malware_scanner"
-CATEGORIES = (
-    "浏览器", "AI 工具", "云服务与运维", "软件包与 CI", "Git 与代码托管",
-    "SSH、GPG 与密钥", "数据库与数据存储", "编辑器与插件", "Shell 历史与配置",
-    "其他开发工具", "普通目录", "程序与辅助文件",
-)
-KINDS = {
-    "credential": "凭据文件", "key_material": "密钥", "config": "配置",
-    "browser": "浏览器资料", "general": "普通目录", "program": "程序文件",
-}
-STATUS = {
-    "present": "存在", "absent": "未发现", "unreadable": "无法检查",
-    "skipped": "未检查", "partial": "不完整", "read": "已读取",
-}
-REASONS = {
-    "unreadable": "无法检查：权限不足、文件被锁定或格式不支持",
-    "skipped": "未检查：网络路径、重解析点或缺少环境变量",
-}
+CATEGORIES = tuple(CATEGORY_NAMES)
 AUTH_KINDS = {"credential", "key_material", "config"}
-ACTIONS = {
-    "AI 工具": "在各 AI 工具中退出并重新登录，到服务后台撤销 OAuth 授权，删除并重新生成 API Key。",
-    "云服务与运维": "撤销云平台访问密钥、令牌和服务账号密钥，重新生成 kubeconfig 等集群凭据。",
-    "软件包与 CI": "撤销 npm、PyPI 等包仓库的发布令牌和 CI 密钥，更新构建与部署中使用的凭据。",
-    "Git 与代码托管": "撤销个人访问令牌和 CLI 授权，检查代码托管平台的登录记录与已登记的 SSH 密钥。",
-    "SSH、GPG 与密钥": "生成新密钥对，在服务器和代码平台上删除旧公钥，吊销旧 GPG 密钥。只修改私钥口令无法让已复制的密钥失效。",
-    "数据库与数据存储": "修改数据库密码，轮换连接串和访问令牌。",
-    "编辑器与插件": "退出编辑器账号和插件登录，撤销插件与 MCP 服务使用的令牌。",
-    "Shell 历史与配置": "检查历史记录和启动脚本中是否出现过密码或令牌；出现过的全部轮换，再删除对应记录。",
-    "其他开发工具": "逐个工具重新登录，并撤销旧令牌。",
-}
-# (计数键, 色调, 名称, 等级, 处理建议)；顺序即页面优先级。
-RISKS = (
-    ("v10", "crit", "v10", "高风险",
-     "以当前用户身份运行的程序可直接解密。逐个处理下列站点：在可信设备上修改密码、退出其他设备的登录、开启两步验证。"),
-    ("plain", "crit", "未加密 Cookie", "高风险",
-     "Cookie 以明文保存，复制后即可使用。在对应站点退出登录，使这些会话失效。"),
-    ("other", "warn", "未知格式", "待核实",
-     "加密前缀不是 v10 或 v20，无法判断保护方式，按 v10 处理。"),
-    ("v20", "info", "v20", "较低",
-     "受应用绑定加密保护，需提权或注入浏览器进程才能解密。处理完 v10 后，再退出重要站点的登录。"),
-    ("empty", "none", "空值", "无需处理", "记录中没有保存密码或 Cookie 值。"),
-)
+# 计数键与色调；顺序即页面优先级。
+RISKS = (("v10", "crit"), ("plain", "crit"), ("other", "warn"), ("v20", "info"), ("empty", "none"))
 COUNT_KEYS = ("total", "v10", "v20", "other", "empty", "plain")
 # 长列表按固定行高分块，离屏分块由 content-visibility 跳过样式、布局和绘制。
 CHUNK = 100
 ROW_HEIGHT = 34
+SINGULAR = (("records", "record"), ("sites", "site"), ("locations", "location"), ("categories", "category"),
+            ("items", "item"), ("matches", "match"))
+
+
+def singular(text):
+    for many, one in SINGULAR:
+        text = re.sub(r"\b" + many + r"\b", one, text)
+    return text
+
+
+class Text:
+    """绑定语言的文案查询；扫描器写入的中文配置别名和占位值在这里本地化。"""
+
+    def __init__(self, lang):
+        self.lang = normalize_lang(lang)
+
+    def __call__(self, key, **values):
+        text = t(self.lang, key, **values)
+        return singular(text) if self.lang == "en" and values.get("n") == "1" else text
+
+    def unit(self, key, count):
+        return singular(t(self.lang, key)) if self.lang == "en" and count == 1 else t(self.lang, key)
+
+    def category(self, name):
+        return pick(self.lang, CATEGORY_NAMES[name]) if name in CATEGORY_NAMES else str(name)
+
+    def action(self, category):
+        return pick(self.lang, ACTIONS[category]) if category in ACTIONS else ""
+
+    def risk(self, key):
+        name, level, action = RISK_TEXT[key]
+        return pick(self.lang, name), pick(self.lang, level), pick(self.lang, action)
+
+    def profile(self, value):
+        value = str(value or "")
+        match = re.fullmatch(r"配置 (\d+)", value)
+        if match:
+            return self("profile.n", n=match.group(1))
+        return self("profile.main") if value == "主配置" else value
+
+    def placeholder(self, value, fallback):
+        if value in (None, "", "站点未知", "未填写"):
+            return self("site.unknown" if fallback == "site" else "account.empty")
+        return value
+
+    def status(self, item):
+        if item.get("status") == "matched":
+            return self("status.matched", n=fmt(item.get("matches")))
+        if item.get("status") == "partial":
+            return self("status.partial_matched", n=fmt(item.get("matches")))
+        status = item.get("status")
+        return self("status." + status) if status in ("present", "absent", "unreadable", "skipped", "read") else self("status.skipped")
 
 
 def e(value):
@@ -68,20 +86,12 @@ def hit(item):
     return item.get("status") in ("present", "matched") or number(item.get("matches")) > 0
 
 
-def status(item):
-    if item.get("status") == "matched":
-        return "匹配 %s 项" % fmt(item.get("matches"))
-    if item.get("status") == "partial":
-        return "不完整，已匹配 %s 项" % fmt(item.get("matches"))
-    return STATUS.get(item.get("status"), "未检查")
+def where(database, T):
+    return (str(database.get("browser", "")) + " " + T.profile(database.get("profile"))).strip()
 
 
-def where(database):
-    return (str(database.get("browser", "")) + " " + str(database.get("profile", ""))).strip()
-
-
-def store_name(database):
-    return "密码" if database.get("store") == "passwords" else "Cookie"
+def store_name(database, T):
+    return T("store.passwords" if database.get("store") == "passwords" else "store.cookies")
 
 
 def row(*cells):
@@ -89,7 +99,7 @@ def row(*cells):
 
 
 def rows(columns, head, body):
-    out = ['<div class="list ', columns, '"><div class="row head"><span>', "</span><span>".join(head), "</span></div>"]
+    out = ['<div class="list ', columns, '"><div class="row head"><span>', "</span><span>".join(e(h) for h in head), "</span></div>"]
     for start in range(0, len(body), CHUNK):
         part = body[start:start + CHUNK]
         out.append('<div class="chunk" style="contain-intrinsic-size:auto %dpx">' % (len(part) * ROW_HEIGHT))
@@ -103,38 +113,39 @@ def state(label, tone):
     return '<i class="st ' + tone + '">' + e(label) + "</i>"
 
 
-def record_lists(pairs):
-    passwords = sorted((r.get("site") or "站点未知", r.get("identifier") or "未填写", where(d))
+def record_lists(pairs, T):
+    passwords = sorted((T.placeholder(r.get("site"), "site"), T.placeholder(r.get("identifier"), "account"), where(d, T))
                        for d, r in pairs if d.get("store") == "passwords")
     cookies = {}
     for database, record in pairs:
         if database.get("store") == "passwords":
             continue
-        entry = cookies.setdefault(record.get("site") or "站点未知", [0, []])
+        entry = cookies.setdefault(T.placeholder(record.get("site"), "site"), [0, []])
         entry[0] += 1
-        if where(database) not in entry[1]:
-            entry[1].append(where(database))
+        if where(database, T) not in entry[1]:
+            entry[1].append(where(database, T))
     html = ""
     if passwords:
-        html += ('<h4>已保存的密码<span>' + fmt(len(passwords)) + ' 条</span></h4>'
-                 + rows("cols-pw", ("站点", "账号（脱敏）", "浏览器"),
+        html += ('<h4>' + e(T("browser.passwords")) + '<span>' + e(T("count.records", n=fmt(len(passwords)))) + '</span></h4>'
+                 + rows("cols-pw", (T("col.site"), T("col.account"), T("col.browser")),
                         [row(e(site), "<code>" + e(account) + "</code>", e(browser)) for site, account, browser in passwords]))
     if cookies:
         ordered = sorted(cookies.items(), key=lambda item: (-item[1][0], item[0]))
-        html += ('<h4>Cookie<span>' + fmt(sum(c for c, _ in cookies.values())) + ' 条 · '
-                 + fmt(len(ordered)) + ' 个站点</span></h4>'
-                 + rows("cols-ck", ("站点", "数量", "浏览器"),
-                        [row(e(site), fmt(count), e("、".join(browsers))) for site, (count, browsers) in ordered]))
+        meta = T("count.records", n=fmt(sum(c for c, _ in cookies.values()))) + T("unit.sites", n=fmt(len(ordered)))
+        html += ('<h4>' + e(T("browser.cookies")) + '<span>' + e(meta) + '</span></h4>'
+                 + rows("cols-ck", (T("col.site"), T("col.count"), T("col.browser")),
+                        [row(e(site), fmt(count), e((", " if T.lang in ("en", "ko") else "、").join(browsers)))
+                         for site, (count, browsers) in ordered]))
     return html
 
 
-def database_state(database):
+def database_state(database, T):
     if database.get("status") == "partial":
-        return "不完整（WAL）" if database.get("wal") else "不完整"
-    return STATUS.get(database.get("status"), "未检查")
+        return T("status.partial_wal") if database.get("wal") else T("status.partial")
+    return T.status(database)
 
 
-def render_browsers(report):
+def render_browsers(report, T):
     databases = report.get("databases", [])
     counted = [d for d in databases if isinstance(d.get("counts"), dict)]
     totals = {key: sum(number(d["counts"].get(key)) for d in counted) for key in COUNT_KEYS}
@@ -147,22 +158,24 @@ def render_browsers(report):
 
     parts = []
     if report.get("skip_counts"):
-        parts.append('<p class="note">未检查浏览器数据库：本次使用了 --quick 或 --no-browser-count。</p>')
+        parts.append('<p class="note">' + e(T("browser.skipped")) + '</p>')
     elif not counted:
-        parts.append('<p class="note">没有读到浏览器数据库，原因见<a href="#incomplete">未完成检查</a>。</p>')
+        link = '<a href="#incomplete">' + e(T("nav.incomplete")) + '</a>'
+        parts.append('<p class="note">' + e(T("browser.none", link="\0")).replace("\0", link) + '</p>')
     elif not any(totals[key] for key in ("v10", "plain", "other", "v20")):
-        parts.append('<p class="clear">已读取的数据库中没有 v10、v20、未加密或未知格式的记录。</p>')
+        parts.append('<p class="clear">' + e(T("browser.clear")) + '</p>')
     if any(d.get("status") == "partial" for d in databases):
-        parts.append('<p class="note">统计不完整：部分数据库有未合并的 WAL 或在读取时被写入，数量可能偏少。'
-                     '关闭浏览器后重新运行可得到完整结果。</p>')
-    for key, tone, name, level, action in RISKS:
+        parts.append('<p class="note">' + e(T("browser.partial")) + '</p>')
+    for key, tone in RISKS:
         if not totals[key]:
             continue
-        meta = fmt(totals[key]) + " 条" + (" · " + fmt(sites[key]) + " 个站点" if records[key] else "")
+        name, level, action = T.risk(key)
+        meta = T("count.records", n=fmt(totals[key])) + (T("unit.sites", n=fmt(sites[key])) if records[key] else "")
         parts.append('<div class="risk ' + tone + '" id="risk-' + key + '"><div class="risk-head"><b>' + e(name)
-                     + '</b><span class="level">' + e(level) + '</span><span class="n">' + meta + '</span></div><p>'
+                     + '</b><span class="level">' + e(level) + '</span><span class="n">' + e(meta) + '</span></div><p>'
                      + e(action) + '</p>'
-                     + ('<details><summary>查看明细</summary>' + record_lists(records[key]) + '</details>' if records[key] else '')
+                     + ('<details><summary>' + e(T("browser.details")) + '</summary>' + record_lists(records[key], T) + '</details>'
+                        if records[key] else '')
                      + '</div>')
 
     listed = [d for d in databases if d.get("status") != "absent"]
@@ -175,31 +188,32 @@ def render_browsers(report):
                 value = number(counts.get(key)) if counts else None
                 text = "—" if value is None else fmt(value)
                 cells.append('<b class="hot">' + text + '</b>' if key in ("v10", "plain") and value else text)
-            body.append(row(e(where(database)), store_name(database), e(database_state(database)), *cells))
+            body.append(row(e(where(database, T)), e(store_name(database, T)), e(database_state(database, T)), *cells))
         missing = len(databases) - len(listed)
-        parts.append('<details class="databases"><summary>按数据库查看 · ' + fmt(len(listed)) + ' 个'
-                     + ('，另有 ' + fmt(missing) + ' 个不存在' if missing else '') + '</summary>'
-                     + rows("cols-db", ("浏览器", "类型", "状态", "总数", "v10", "v20", "未加密", "未知", "空值"), body)
+        summary = T("browser.databases", n=fmt(len(listed))) + (T("browser.missing", n=fmt(missing)) if missing else "")
+        parts.append('<details class="databases"><summary>' + e(summary) + '</summary>'
+                     + rows("cols-db", (T("col.browser"), T("col.type"), T("col.status"), T("col.total"), "v10", "v20",
+                                        T("col.plain"), T("col.other"), T("col.empty")), body)
                      + '</details>')
     coverage = report.get("coverage", [])
     if coverage:
-        labels = {"present": "已检查", "absent": "未找到资料"}
         parts.append('<p class="coverage">' + " · ".join(
-            e(c.get("browser", "")) + " " + labels.get(c.get("status"), "无法检查") for c in coverage) + '</p>')
+            e(c.get("browser", "")) + " " + e(T("coverage." + (c.get("status") if c.get("status") in ("present", "absent") else "unreadable")))
+            for c in coverage) + '</p>')
     return "".join(parts), totals, bool(counted), sites, records
 
 
-def target_items(report):
+def target_items(report, T):
     items = []
     for result in report.get("results", []):
         category = result.get("report_category")
         # 未标注的自定义清单使用保守分类，不按来源索引猜测鉴权类型。
         items.append({"label": result.get("template", ""), "kind": result.get("kind", "config"),
                       "category": category if category in CATEGORIES else "其他开发工具",
-                      "status": status(result), "hit": hit(result), "source": result,
+                      "status": T.status(result), "hit": hit(result), "source": result,
                       "incomplete": result.get("status") in ("unreadable", "skipped", "partial")})
     for entry in report.get("registry", []):
-        label = status(entry)
+        label = T.status(entry)
         hives = [h for h in entry.get("hives", []) if h in ("HKCU", "HKLM")]
         if hives:
             label += " · " + "/".join(hives)
@@ -209,15 +223,17 @@ def target_items(report):
     return items
 
 
-def target_rows(items):
+def target_rows(items, T):
     ordered = sorted(items, key=lambda i: (not i["hit"], not i["incomplete"], i["label"]))
-    return rows("cols-t", ("位置", "类型", "结果"), [
-        row("<code>" + e(i["label"]) + "</code>", "注册表键" if i.get("registry") else e(KINDS.get(i["kind"], KINDS["config"])),
+    kinds = ("credential", "key_material", "config", "browser", "general", "program")
+    return rows("cols-t", (T("col.location"), T("col.type"), T("col.result")), [
+        row("<code>" + e(i["label"]) + "</code>",
+            e(T("kind.registry") if i.get("registry") else T("kind." + (i["kind"] if i["kind"] in kinds else "config"))),
             state(i["status"], "hit" if i["hit"] else "inc" if i["incomplete"] else "none"))
         for i in ordered])
 
 
-def render_targets(items):
+def render_targets(items, T):
     auth = [i for i in items if i["kind"] in AUTH_KINDS]
     groups, quiet = [], []
     for category in CATEGORIES:
@@ -228,157 +244,155 @@ def render_targets(items):
         rest = [i for i in members if not i["hit"]]
         count = '<span class="count">' + fmt(len(found)) + ' / ' + fmt(len(members)) + '</span>'
         if found:
-            groups.append('<div class="group"><div class="group-head"><h3>' + e(category) + '</h3>' + count + '</div>'
-                          + ('<p class="todo">' + e(ACTIONS[category]) + '</p>' if category in ACTIONS else '')
-                          + target_rows(found)
-                          + ('<details><summary>其余 ' + fmt(len(rest)) + ' 项</summary>' + target_rows(rest) + '</details>' if rest else '')
+            action = T.action(category)
+            groups.append('<div class="group"><div class="group-head"><h3>' + e(T.category(category)) + '</h3>' + count + '</div>'
+                          + ('<p class="todo">' + e(action) + '</p>' if action else '')
+                          + target_rows(found, T)
+                          + ('<details><summary>' + e(T("auth.rest", n=fmt(len(rest)))) + '</summary>' + target_rows(rest, T) + '</details>'
+                             if rest else '')
                           + '</div>')
         else:
-            quiet.append('<details><summary>' + e(category) + count + '</summary>' + target_rows(members) + '</details>')
+            quiet.append('<details><summary>' + e(T.category(category)) + count + '</summary>' + target_rows(members, T) + '</details>')
     found_total = sum(i["hit"] for i in auth)
-    html = '<p class="lead">这些位置可能保存登录凭据、令牌或密钥。只检查了是否存在，没有打开文件。</p>' if auth else ''
+    html = '<p class="lead">' + e(T("auth.lead")) + '</p>' if auth else ''
     if auth and not found_total:
-        html += '<p class="clear">清单内的凭据位置均未发现。</p>'
+        html += '<p class="clear">' + e(T("auth.clear")) + '</p>'
     html += "".join(groups)
     if quiet:
-        html += '<div class="quiet"><h3>未发现</h3>' + "".join(quiet) + '</div>'
+        html += '<div class="quiet"><h3>' + e(T("auth.quiet")) + '</h3>' + "".join(quiet) + '</div>'
     other = [i for i in items if i["kind"] not in AUTH_KINDS]
     if other:
-        html += ('<div class="quiet"><h3>非凭据位置</h3><details><summary>浏览器资料、普通目录与程序文件<span class="count">'
-                 + fmt(sum(i["hit"] for i in other)) + ' / ' + fmt(len(other)) + '</span></summary><p class="lead">'
-                 '浏览器资料中的密码和 Cookie 已在上方统计；用户目录和程序目录不是凭据位置，列出仅供对照。</p>'
-                 + target_rows(other) + '</details></div>')
+        html += ('<div class="quiet"><h3>' + e(T("auth.other")) + '</h3><details><summary>' + e(T("auth.other_summary"))
+                 + '<span class="count">' + fmt(sum(i["hit"] for i in other)) + ' / ' + fmt(len(other)) + '</span></summary>'
+                 '<p class="lead">' + e(T("auth.other_lead")) + '</p>' + target_rows(other, T) + '</details></div>')
     if not items:
-        html += '<p class="note">目标清单为空。</p>'
+        html += '<p class="note">' + e(T("auth.empty")) + '</p>'
     return html, found_total, len({i["category"] for i in auth if i["hit"]})
 
 
-def render_wallets(report):
+def render_wallets(report, T):
     wallets = report.get("wallets", [])
     found = [w for w in wallets if hit(w)]
     if report.get("skip_wallets"):
-        return '<p class="note">未检查钱包扩展：本次使用了 --quick。</p>', None
-    html = ""
-    if found:
-        html += ('<p class="todo">扩展数据被复制后，可离线暴力破解钱包密码。钱包内有资产时，'
-                 '新建钱包（新助记词）并转移资产。</p>')
-    else:
-        html += '<p class="clear">已检查的浏览器配置中没有清单内的钱包扩展。</p>'
+        return '<p class="note">' + e(T("wallets.skipped")) + '</p>', None
+    html = '<p class="todo">' + e(T("wallets.todo")) + '</p>' if found else '<p class="clear">' + e(T("wallets.clear")) + '</p>'
     if wallets:
-        html += rows("cols-w", ("浏览器", "扩展 ID", "结果"), [
-            row(e(where(w)), "<code>" + e(w.get("id", "")) + "</code>",
-                state(status(w), "hit" if hit(w) else "inc")) for w in wallets])
+        html += rows("cols-w", (T("col.browser"), T("col.extension"), T("col.result")), [
+            row(e(where(w, T)), "<code>" + e(w.get("id", "")) + "</code>",
+                state(T.status(w), "hit" if hit(w) else "inc")) for w in wallets])
     return html, len(found)
 
 
-def incomplete_items(report, items):
+def incomplete_items(report, items, T):
     out = []
     for item in items:
         if not item["incomplete"]:
             continue
         source = item["source"]
         if source.get("status") == "partial":
-            reason = "不完整：遍历时出错，已匹配 " + fmt(source.get("matches")) + " 项"
+            reason = T("reason.glob", n=fmt(source.get("matches")))
         elif item.get("registry") and source.get("partial"):
-            reason = "不完整：部分根键无法打开"
+            reason = T("reason.registry")
         else:
-            reason = REASONS.get(source.get("status"), "未检查")
+            reason = T("reason." + (source.get("status") if source.get("status") in ("unreadable", "skipped") else "skipped"))
         out.append(("<code>" + e(item["label"]) + "</code>", reason))
     for database in report.get("databases", []):
         if database.get("status") == "partial":
-            reason = "不完整：WAL 未合并或读取时被写入"
-        elif database.get("status") in REASONS:
-            reason = REASONS[database["status"]]
+            reason = T("reason.database")
+        elif database.get("status") in ("unreadable", "skipped"):
+            reason = T("reason." + database["status"])
         else:
             continue
-        out.append((e(where(database)) + " · " + e(database.get("database", store_name(database))), reason))
+        out.append((e(where(database, T)) + " · " + e(database.get("database", store_name(database, T))), reason))
     for entry in report.get("coverage", []):
         if entry.get("status") not in ("present", "absent"):
-            out.append((e(entry.get("browser", "")) + " 资料目录", REASONS["unreadable"]))
+            out.append((e(T("item.profile_dir", browser=entry.get("browser", ""))), T("reason.unreadable")))
     for wallet in report.get("wallets", []):
         if wallet.get("status") in ("unreadable", "skipped", "partial"):
-            out.append((e(where(wallet)) + " · 钱包 <code>" + e(wallet.get("id", "")) + "</code>",
-                        REASONS.get(wallet["status"], "不完整")))
+            reason = T("reason." + wallet["status"]) if wallet["status"] != "partial" else T("reason.partial")
+            out.append((e(where(wallet, T)) + " · " + e(T("item.wallet")) + " <code>" + e(wallet.get("id", "")) + "</code>", reason))
     return out
 
 
-def summary_row(tone, label, value, meta, href):
+def summary_row(tone, label, value, meta, href, T):
     zero = value == 0
     return ('<a class="sum-row ' + ("zero" if zero or value is None else tone) + '" href="' + href + '"><span class="sum-label">'
             + e(label) + '</span><span class="sum-n">' + ("—" if value is None else fmt(value)) + '</span><span class="sum-meta">'
-            + e("未检查" if value is None else meta) + '</span></a>')
+            + e(T("sum.unchecked") if value is None else meta) + '</span></a>')
 
 
-def render_report(report):
-    browser_html, totals, counted, sites, records = render_browsers(report)
-    items = target_items(report)
-    target_html, target_hits, target_groups = render_targets(items)
-    wallet_html, wallet_hits = render_wallets(report)
-    pending = incomplete_items(report, items)
+def render_report(report, lang="zh"):
+    T = Text(lang)
+    browser_html, totals, counted, sites, records = render_browsers(report, T)
+    items = target_items(report, T)
+    target_html, target_hits, target_groups = render_targets(items, T)
+    wallet_html, wallet_hits = render_wallets(report, T)
+    pending = incomplete_items(report, items, T)
 
     def browser_meta(key):
-        return "条" + (" · " + fmt(sites[key]) + " 个站点" if records[key] else "")
+        return T.unit("unit.records", totals[key]) + (T("unit.sites", n=fmt(sites[key])) if records[key] else "")
 
-    summary = [
-        summary_row("crit", "v10 密码与 Cookie", totals["v10"] if counted else None, browser_meta("v10"),
-                    "#risk-v10" if totals["v10"] else "#browser"),
-        summary_row("crit", "未加密 Cookie", totals["plain"] if counted else None, browser_meta("plain"),
-                    "#risk-plain" if totals["plain"] else "#browser"),
-    ]
+    def browser_row(tone, label, key):
+        return summary_row(tone, T(label), totals[key] if counted else None, browser_meta(key),
+                           "#risk-" + key if totals[key] else "#browser", T)
+
+    summary = [browser_row("crit", "sum.v10", "v10"), browser_row("crit", "sum.plain", "plain")]
     if totals["other"]:
-        summary.append(summary_row("warn", "未知格式记录", totals["other"], browser_meta("other"), "#risk-other"))
+        summary.append(browser_row("warn", "sum.other", "other"))
     summary += [
-        summary_row("warn", "可能含凭据的位置", target_hits, "处" + (" · " + fmt(target_groups) + " 个分类" if target_hits else ""), "#auth"),
-        summary_row("warn", "钱包扩展", wallet_hits, "个", "#wallets"),
-        summary_row("info", "v20 密码与 Cookie", totals["v20"] if counted else None, browser_meta("v20"),
-                    "#risk-v20" if totals["v20"] else "#browser"),
-        summary_row("info", "未完成检查", len(pending), "项", "#incomplete"),
+        summary_row("warn", T("sum.auth"), target_hits,
+                    T.unit("unit.places", target_hits) + (T("unit.groups", n=fmt(target_groups)) if target_hits else ""), "#auth", T),
+        summary_row("warn", T("sum.wallets"), wallet_hits, T("unit.found"), "#wallets", T),
+        browser_row("info", "sum.v20", "v20"),
+        summary_row("info", T("sum.pending"), len(pending), T.unit("unit.items", len(pending)), "#incomplete", T),
     ]
-    pending_html = (rows("cols-inc", ("项目", "原因"), [row(name, e(reason)) for name, reason in pending])
-                    if pending else '<p class="clear">所有项目均已完成检查。</p>')
+    pending_html = (rows("cols-inc", (T("col.item"), T("col.reason")), [row(name, e(reason)) for name, reason in pending])
+                    if pending else '<p class="clear">' + e(T("pending.clear")) + '</p>')
+    scanner = '<a href="' + SCANNER_URL + '" target="_blank" rel="noopener noreferrer">nikke_malware_scanner</a>'
+    nav = "".join('<a href="#' + anchor + '">' + e(T("nav." + key)) + '</a>' for anchor, key in (
+        ("summary", "summary"), ("browser", "browser"), ("auth", "auth"), ("wallets", "wallets"),
+        ("incomplete", "incomplete"), ("about", "about")))
+    facts = "".join('<dt>' + e(T("about." + key)) + '</dt><dd>' + e(T("about." + key + "_text")) + '</dd>'
+                    for key in ("method", "content", "browsers", "skipped", "disclaimer"))
 
     return '''<!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8">
+<html lang="''' + HTML_LANG[T.lang] + '''"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
-<meta name="referrer" content="no-referrer"><title>K2F 泄露面自查报告</title>
+<meta name="referrer" content="no-referrer"><title>''' + e(T("title")) + '''</title>
 <link rel="icon" type="image/jpeg" href="''' + REPORT_ICON + '''">
 <style>''' + CSS + '''</style></head><body>
-<input type="checkbox" id="ack" class="ack" aria-label="我知道了，查看报告">
+<input type="checkbox" id="ack" class="ack" aria-label="''' + e(T("gate.ok")) + '''">
 <div class="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title"><div class="gate-box">
-<h2 id="gate-title">关于这份报告</h2>
-<p>我们分析了公开的 K2F 恶意程序样本，整理出它会扫描的文件、浏览器数据和钱包扩展，再用同样的扫描逻辑检查了这台电脑，生成了这份报告。</p>
-<p>如果你确认电脑已经受到影响，请对照报告自查，尽快处理已暴露的内容：</p>
-<ul><li>报告中列出站点的账号密码，以及其他用了相同密码的账号；</li>
-<li>API Key、访问令牌和 SSH 密钥：撤销后重新生成；</li>
-<li>AI 工具、代码托管和云服务的登录状态：退出登录并撤销旧授权。</li></ul>
-<p>这份报告不能保证绝对准确，也无法判断你的数据是否已经泄露，请把它作为自查和处置的参考。</p>
-<div class="gate-act"><span class="gate-wait"><span>请先阅读以上内容</span></span><label for="ack">我知道了，查看报告</label></div>
+<h2 id="gate-title">''' + e(T("gate.title")) + '''</h2>
+<p>''' + e(T("gate.p1")) + '''</p>
+<p>''' + e(T("gate.p2")) + '''</p>
+<ul><li>''' + e(T("gate.li1")) + '''</li>
+<li>''' + e(T("gate.li2")) + '''</li>
+<li>''' + e(T("gate.li3")) + '''</li></ul>
+<p>''' + e(T("gate.p3")) + '''</p>
+<div class="gate-act"><span class="gate-wait"><span>''' + e(T("gate.wait")) + '''</span></span><label for="ack">''' + e(T("gate.ok")) + '''</label></div>
 </div></div>
-<a class="skip" href="#main">跳到报告内容</a>
-<nav class="bar"><div><a href="#summary">摘要</a><a href="#browser">浏览器数据</a><a href="#auth">凭据位置</a><a href="#wallets">钱包</a><a href="#incomplete">未完成检查</a><a href="#about">说明</a></div></nav>
+<a class="skip" href="#main">''' + e(T("skip")) + '''</a>
+<nav class="bar"><div>''' + nav + '''</div></nav>
 <main id="main">
-<header class="head"><img class="mascot" src="''' + REPORT_ICON + '''" width="56" height="56" alt="笑脸表情"><div><h1>K2F 泄露面自查报告</h1><p class="meta">''' + e(report.get("generated_at", "")) + '''</p></div></header>
-<p class="disclaimer">位置存在不等于数据已被读取或外传。检查运行痕迹请用 <a href="''' + SCANNER_URL + '''" target="_blank" rel="noopener noreferrer">nikke_malware_scanner</a>。</p>
+<header class="head"><img class="mascot" src="''' + REPORT_ICON + '''" width="56" height="56" alt="''' + e(T("alt")) + '''"><div><h1>''' + e(T("title")) + '''</h1><p class="meta">''' + e(report.get("generated_at", "")) + '''</p></div></header>
+<p class="disclaimer">''' + e(T("header.note", link="\0")).replace("\0", scanner) + '''</p>
 <section id="summary" class="summary">''' + "".join(summary) + '''</section>
-<section id="browser"><h2>浏览器数据<small>密码与 Cookie</small></h2>''' + browser_html + '''</section>
-<section id="auth"><h2>凭据位置</h2>''' + target_html + '''</section>
-<section id="wallets"><h2>钱包扩展</h2>''' + wallet_html + '''</section>
-<section id="incomplete"><h2>未完成检查<small>''' + fmt(len(pending)) + ''' 项</small></h2>''' + pending_html + '''</section>
-<section id="about"><h2>说明</h2><dl class="facts">
-<dt>检查方式</dt><dd>普通目标只检查路径或注册表键是否存在，不打开文件，不读取键值。浏览器数据库以共享只读方式载入内存，只识别加密前缀，不解密。</dd>
-<dt>报告内容</dt><dd>站点主机名、脱敏账号和 Cookie 数量。账号不超过 4 个字符时完全隐藏，否则只保留首尾字符。报告不含密码、Cookie 值、令牌或私钥，但站点列表仍属个人隐私，不要公开分享。</dd>
-<dt>浏览器范围</dt><dd>Chrome、Edge、Brave、Vivaldi、Opera 的 Default 与 Profile N，Opera 另含根配置。Firefox 只检查资料目录。便携版和自定义资料目录不在范围内。</dd>
-<dt>跳过的情况</dt><dd>网络路径、映射网络驱动器和重解析点不检查。超过 512 MiB 或被锁定的数据库记为无法检查；有未合并 WAL 的数据库只统计主库。</dd>
-<dt>免责声明</dt><dd>本报告只反映 K2F 采集目标在本机的存在情况，不检测感染，也不能确认是否已泄露或未泄露。</dd>
-</dl></section>
+<section id="browser"><h2>''' + e(T("nav.browser")) + '''<small>''' + e(T("browser.small")) + '''</small></h2>''' + browser_html + '''</section>
+<section id="auth"><h2>''' + e(T("nav.auth")) + '''</h2>''' + target_html + '''</section>
+<section id="wallets"><h2>''' + e(T("sum.wallets")) + '''</h2>''' + wallet_html + '''</section>
+<section id="incomplete"><h2>''' + e(T("nav.incomplete")) + '''<small>''' + e(T("count.items", n=fmt(len(pending)))) + '''</small></h2>''' + pending_html + '''</section>
+<section id="about"><h2>''' + e(T("nav.about")) + '''</h2><dl class="facts">''' + facts + '''</dl></section>
 </main></body></html>'''
 
 
+# 声明弹窗的阅读限制：6 秒内按钮与复选框均为 visibility:hidden，鼠标和键盘都无法提前关闭。
 CSS = r"""
 :root{color-scheme:light;--bg:#f7f7f5;--paper:#fff;--ink:#1d1f21;--sub:#5b6066;--faint:#949a9f;--line:#e4e4e0;--soft:#efefeb;--crit:#c0352b;--crit-bg:#fcefed;--warn:#95590a;--warn-bg:#fbf3e4;--link:#1d5c9a}
 *{box-sizing:border-box}html{scroll-padding-top:60px}
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.65 "Segoe UI","Microsoft YaHei UI","Microsoft YaHei",sans-serif}
+html:lang(ja) body{font-family:"Segoe UI","Yu Gothic UI","Meiryo",sans-serif}html:lang(ko) body{font-family:"Segoe UI","Malgun Gothic",sans-serif}
 a{color:var(--link);text-underline-offset:3px}:focus-visible{outline:2px solid var(--link);outline-offset:2px}
 .skip{position:absolute;left:8px;top:-60px;background:var(--paper);padding:8px 12px;z-index:20}.skip:focus{top:8px}
 .bar{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}
@@ -454,7 +468,6 @@ code{font:12.5px/1.5 Consolas,"Cascadia Mono",monospace;color:#34424d}
 .gate-wait::before{content:"";position:absolute;inset:0;background:#e0e0da;transform:scaleX(0);transform-origin:left;animation:gate-fill 6s linear forwards}
 .gate-wait span{position:relative}
 .gate-act label{background:var(--ink);color:#fff;cursor:pointer}.gate-act label:hover{background:#000}
-/* 阅读限制：6 秒内按钮与复选框均为 hidden，鼠标和键盘都无法提前关闭。 */
 .ack,.gate-act label{visibility:hidden;animation:gate-unlock 0s 6s forwards}
 .ack:focus-visible+.gate label{outline:2px solid var(--link);outline-offset:3px}
 @keyframes gate-fill{to{transform:scaleX(1)}}@keyframes gate-unlock{to{visibility:visible}}
