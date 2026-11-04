@@ -546,7 +546,7 @@ def scan_ssh_references():
                     identity = value
                 elif key == "include":
                     for include in value.split():
-                        if not include.startswith(("/", "~")):
+                        if not include.startswith(("/", "~")) and not ntpath.isabs(include):
                             include = "~\\.ssh\\" + include
                         read_config(include, depth + 1)
             add_identity()
@@ -658,7 +658,8 @@ def main(argv=None):
         return 2
     now = datetime.now()
     try:
-        output = local_path(args.out or ("K2F_selfcheck_" + now.strftime("%Y%m%d_%H%M%S_%f") + ".html"))
+        program_dir = Path(sys.executable if getattr(sys, "frozen", False) else __file__).parent
+        output = local_path(args.out or program_dir / ("K2F_selfcheck_" + now.strftime("%Y%m%d_%H%M%S_%f") + ".html"))
         if Path(output).suffix.lower() not in (".html", ".htm"):
             parser.error(T("cli.bad_ext"))
         with open(local_path(args.targets), encoding="utf-8") as stream:
