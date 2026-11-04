@@ -16,7 +16,7 @@ COUNT_KEYS = ("total", "v10", "v20", "other", "empty", "plain")
 # 长列表按固定行高分块，离屏分块由 content-visibility 跳过样式、布局和绘制。
 CHUNK = 100
 ROW_HEIGHT = 34
-SINGULAR = (("records", "record"), ("sites", "site"), ("locations", "location"), ("categories", "category"),
+SINGULAR = (("records", "record"), ("checks", "check"), ("sites", "site"), ("locations", "location"), ("categories", "category"),
             ("items", "item"), ("matches", "match"))
 
 
@@ -235,7 +235,7 @@ def target_rows(items, T):
 
 def render_targets(items, T):
     auth = [i for i in items if i["kind"] in AUTH_KINDS]
-    groups, quiet = [], []
+    groups, uncertain, quiet = [], [], []
     for category in CATEGORIES:
         members = [i for i in auth if i["category"] == category]
         if not members:
@@ -252,12 +252,21 @@ def render_targets(items, T):
                              if rest else '')
                           + '</div>')
         else:
-            quiet.append('<details><summary>' + e(T.category(category)) + count + '</summary>' + target_rows(members, T) + '</details>')
+            # 无法检查、跳过或遍历不完整的目标存在性未知，不能归入“未发现”。
+            pending = sum(i["incomplete"] for i in members)
+            block = ('<details><summary>' + e(T.category(category)) + count
+                     + ('<span class="count">' + e(T("auth.uncertain_count", n=fmt(pending))) + '</span>' if pending else '')
+                     + '</summary>' + target_rows(members, T) + '</details>')
+            (uncertain if pending else quiet).append(block)
     found_total = sum(i["hit"] for i in auth)
+    pending_total = sum(i["incomplete"] for i in auth)
     html = '<p class="lead">' + e(T("auth.lead")) + '</p>' if auth else ''
     if auth and not found_total:
-        html += '<p class="clear">' + e(T("auth.clear")) + '</p>'
+        html += ('<p class="note">' + e(T("auth.unsure", n=fmt(pending_total))) + '</p>' if pending_total
+                 else '<p class="clear">' + e(T("auth.clear")) + '</p>')
     html += "".join(groups)
+    if uncertain:
+        html += '<div class="quiet"><h3>' + e(T("auth.uncertain")) + '</h3>' + "".join(uncertain) + '</div>'
     if quiet:
         html += '<div class="quiet"><h3>' + e(T("auth.quiet")) + '</h3>' + "".join(quiet) + '</div>'
     other = [i for i in items if i["kind"] not in AUTH_KINDS]

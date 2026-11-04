@@ -331,6 +331,20 @@ class LocalReportTests(unittest.TestCase):
         self.assertIn("보고서 저장됨", stdout.getvalue())
         self.assertIn('lang="ko"', output.read_text(encoding="utf-8"))
 
+    def test_incomplete_credential_checks_are_not_reported_as_absent(self):
+        unreadable = {"template": "~/.aws/credentials", "report_category": "云服务与运维", "kind": "credential", "status": "unreadable"}
+        absent = {"template": "~/.zsh_history", "report_category": "Shell 历史与配置", "kind": "config", "status": "absent"}
+        html = render_report({"results": [unreadable, absent]})
+        auth = html[html.index('id="auth"'):html.index('id="wallets"')]
+        self.assertNotIn("清单内的凭据位置均未发现", auth)
+        self.assertIn("有 1 项未能完成检查", auth)
+        uncertain = auth[auth.index("未能完成检查</h3>"):auth.index("未发现</h3>")]
+        self.assertIn("~/.aws/credentials", uncertain)
+        self.assertNotIn("~/.zsh_history", uncertain)
+        self.assertIn("~/.zsh_history", auth[auth.index("未发现</h3>"):])
+        self.assertIn("but 1 check did not complete", render_report({"results": [unreadable]}, "en"))
+        self.assertIn("清单内的凭据位置均未发现", render_report({"results": [absent]}))
+
     def test_skipped_counts_are_not_zero_or_safe(self):
         html = render_report({"skip_counts": True, "skip_wallets": True})
         self.assertIn("未检查浏览器数据库", html)
