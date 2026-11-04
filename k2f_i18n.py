@@ -17,6 +17,10 @@ CATEGORY_NAMES = {
     "其他开发工具": ("其他开发工具", "Other dev tools", "その他の開発ツール", "기타 개발 도구"),
     "普通目录": ("普通目录", "General folders", "一般フォルダー", "일반 폴더"),
     "程序与辅助文件": ("程序与辅助文件", "Programs & support files", "プログラム・補助ファイル", "프로그램·보조 파일"),
+    "环境变量": ("环境变量", "Environment variables", "環境変数", "환경 변수"),
+    "项目配置": ("项目配置", "Project configuration", "プロジェクト設定", "프로젝트 설정"),
+    "Windows 凭据管理器": ("Windows 凭据管理器", "Windows Credential Manager", "Windows 資格情報マネージャー", "Windows 자격 증명 관리자"),
+    "NIKKE": ("NIKKE", "NIKKE", "NIKKE", "NIKKE"),
 }
 
 ACTIONS = {
@@ -65,6 +69,26 @@ ACTIONS = {
         "Sign in again to each tool and revoke old tokens.",
         "ツールごとに再度サインインし、古いトークンを取り消してください。",
         "도구마다 다시 로그인하고 기존 토큰을 취소하세요."),
+    "环境变量": (
+        "核对下列变量对应的服务，撤销并更新访问令牌。",
+        "Review the services named by these variables, then revoke and replace their tokens.",
+        "変数に対応するサービスを確認し、トークンを無効化して更新してください。",
+        "변수에 해당하는 서비스를 확인하고 토큰을 폐기한 뒤 교체하세요."),
+    "项目配置": (
+        "在对应目录检查项目配置中的凭据，并到服务后台轮换。",
+        "Review credentials in the project configuration and rotate them in the service dashboard.",
+        "該当フォルダーの設定内の認証情報を確認し、サービス側で更新してください。",
+        "해당 폴더의 프로젝트 설정에서 자격 증명을 확인하고 서비스에서 교체하세요."),
+    "Windows 凭据管理器": (
+        "只统计当前用户可枚举的条目，未读取条目内容。请在 Windows 凭据管理器中核对保存的账号。",
+        "Only enumerable entries were counted; their contents were not read. Review saved accounts in Windows Credential Manager.",
+        "列挙できる項目の件数のみを取得しています。内容は読んでいません。Windows 資格情報マネージャーで保存済みアカウントを確認してください。",
+        "열거 가능한 항목 수만 집계했으며 내용은 읽지 않았습니다. Windows 자격 증명 관리자에서 저장된 계정을 확인하세요."),
+    "NIKKE": (
+        "核对启动器保存的账号，在可信设备上修改密码并撤销旧登录。",
+        "Review saved launcher accounts, then change passwords and revoke old sessions on a trusted device.",
+        "ランチャーの保存済みアカウントを確認し、信頼できる端末でパスワードを変更して古いセッションを取り消してください。",
+        "런처에 저장된 계정을 확인하고 신뢰할 수 있는 기기에서 비밀번호를 바꾼 뒤 기존 세션을 해제하세요."),
 }
 
 # 浏览器记录分类：(名称, 等级, 处理建议)
@@ -76,13 +100,7 @@ RISK_TEXT = {
          "Any program running as the current user can decrypt these. For each site below, change the password on a trusted device, sign out of other devices, and turn on two-factor authentication.",
          "現在のユーザー権限で動くプログラムなら復号できます。下のサイトごとに、信頼できる端末でパスワードを変更し、他の端末からサインアウトし、二段階認証を有効にしてください。",
          "현재 사용자 권한으로 실행되는 프로그램이면 복호화할 수 있습니다. 아래 사이트마다 신뢰할 수 있는 기기에서 비밀번호를 바꾸고, 다른 기기에서 로그아웃하고, 2단계 인증을 켜세요.")),
-    "plain": (
-        ("未加密 Cookie", "Unencrypted cookies", "暗号化されていない Cookie", "암호화되지 않은 쿠키"),
-        ("高风险", "High risk", "高リスク", "고위험"),
-        ("Cookie 以明文保存，复制后即可使用。在对应站点退出登录，使这些会话失效。",
-         "These cookies are stored in plain text and work as soon as they are copied. Sign out on those sites to end the sessions.",
-         "Cookie が平文で保存されており、コピーすればそのまま使えます。該当サイトでサインアウトしてセッションを無効にしてください。",
-         "쿠키가 평문으로 저장되어 복사하면 바로 쓸 수 있습니다. 해당 사이트에서 로그아웃해 세션을 끝내세요.")),
+    "plain": (["未加密 Cookie", "Unencrypted cookies", "暗号化されていない Cookie", "암호화되지 않은 쿠키"], ["样本不读取", "Not read by sample", "サンプルの読み取り対象外", "샘플 읽기 대상 아님"], ["样本只读取 encrypted_value，不读取明文 value；这里不计入样本可取得的 Cookie。", "The sample reads encrypted_value, not the plaintext value column. These cookies are excluded from its exposure count.", "サンプルは encrypted_value のみを読み取り、平文の value は読み取りません。これらは対象件数に含めません。", "샘플은 encrypted_value만 읽고 평문 value는 읽지 않습니다. 이 쿠키는 수집 대상 집계에서 제외합니다."]),
     "other": (
         ("未知格式", "Unknown format", "不明な形式", "알 수 없는 형식"),
         ("待核实", "Unverified", "要確認", "확인 필요"),
@@ -165,10 +183,11 @@ TEXT = {
 
     # 声明弹窗
     "gate.title": ("关于这份报告", "About this report", "このレポートについて", "이 보고서에 대해"),
-    "gate.p1": ("我们分析了公开的 K2F 恶意程序样本，整理出它会扫描的文件、浏览器数据和钱包扩展，再用同样的扫描逻辑检查了这台电脑，生成了这份报告。",
-                "We analyzed the public K2F malware sample, listed the files, browser data and wallet extensions it scans, and checked this computer with the same scanning logic to produce this report.",
-                "公開されている K2F マルウェアのサンプルを分析し、スキャン対象のファイル、ブラウザーデータ、ウォレット拡張機能を洗い出しました。同じスキャンロジックでこのコンピューターを確認し、このレポートを作成しています。",
-                "공개된 K2F 악성코드 샘플을 분석해 이 프로그램이 검사하는 파일, 브라우저 데이터, 지갑 확장 프로그램을 정리했습니다. 같은 검사 로직으로 이 컴퓨터를 점검해 이 보고서를 만들었습니다."),
+    "gate.p1": (
+        "本报告依据 K2F 样本的静态分析，检查采集目标的位置和元信息，并统计浏览器加密版本。它不执行样本，也不解密凭据。",
+        "This report uses static analysis of the K2F sample to check target locations and metadata and count browser encryption versions. It does not execute the sample or decrypt credentials.",
+        "K2F サンプルの静的解析に基づき、対象の場所とメタ情報を確認し、ブラウザーの暗号化方式を集計しています。サンプルの実行や認証情報の復号は行いません。",
+        "K2F 샘플의 정적 분석을 바탕으로 대상 위치와 메타데이터를 확인하고 브라우저 암호화 버전을 집계합니다. 샘플 실행이나 자격 증명 복호화는 하지 않습니다."),
     "gate.p2": ("如果你确认电脑已经受到影响，请对照报告自查，尽快处理已暴露的内容：",
                 "If you have confirmed this computer was affected, go through the report and deal with what was exposed as soon as possible:",
                 "このコンピューターが影響を受けたと確認できた場合は、レポートを見ながら確認し、露出した情報にすぐ対処してください。",
@@ -223,10 +242,11 @@ TEXT = {
                       "The databases that were read contain no v10, v20, unencrypted or unknown-format records.",
                       "読み取ったデータベースに v10、v20、暗号化なし、不明な形式の記録はありません。",
                       "읽은 데이터베이스에 v10, v20, 암호화되지 않음, 알 수 없는 형식의 기록이 없습니다."),
-    "browser.partial": ("统计不完整：部分数据库有未合并的 WAL 或在读取时被写入，数量可能偏少。关闭浏览器后重新运行可得到完整结果。",
-                        "Counts are incomplete: some databases have an unmerged WAL or were written during the read, so the numbers may be low. Close the browser and run again for complete results.",
-                        "集計は不完全です。一部のデータベースに未マージの WAL があるか、読み取り中に書き込まれたため、件数が少なく出ている可能性があります。ブラウザーを閉じて再実行すると完全な結果になります。",
-                        "집계가 불완전합니다. 일부 데이터베이스에 병합되지 않은 WAL이 있거나 읽는 중에 기록되어 수치가 적게 나올 수 있습니다. 브라우저를 닫고 다시 실행하면 전체 결과를 얻을 수 있습니다."),
+    "browser.partial": (
+        "统计不完整：只读取主库快照；样本会复制 WAL 与 SHM，可能读取到更多记录。",
+        "Counts are incomplete: only the main-file snapshot was read. The sample also copies WAL and SHM and may read more records.",
+        "メインファイルのスナップショットのみを集計しています。サンプルは WAL と SHM もコピーするため、より多くの記録を読み取る可能性があります。",
+        "기본 파일 스냅샷만 읽어 집계가 불완전합니다. 샘플은 WAL과 SHM도 복사하므로 더 많은 기록을 읽을 수 있습니다."),
     "browser.details": ("查看明细", "Show details", "詳細を表示", "자세히 보기"),
     "browser.passwords": ("已保存的密码", "Saved passwords", "保存されたパスワード", "저장된 비밀번호"),
     "browser.cookies": ("Cookie", "Cookies", "Cookie", "쿠키"),
@@ -247,15 +267,16 @@ TEXT = {
     "col.empty": ("空值", "Empty", "空", "빈 값"),
     "col.location": ("位置", "Location", "場所", "위치"),
     "col.result": ("结果", "Result", "結果", "결과"),
-    "col.extension": ("扩展 ID", "Extension ID", "拡張機能 ID", "확장 ID"),
+    "col.extension": ("钱包数据位置", "Wallet data location", "ウォレットデータの場所", "지갑 데이터 위치"),
     "col.item": ("项目", "Item", "項目", "항목"),
     "col.reason": ("原因", "Reason", "理由", "이유"),
 
     # 凭据位置
-    "auth.lead": ("这些位置可能保存登录凭据、令牌或密钥。只检查了是否存在，没有打开文件。",
-                  "These locations may hold sign-in credentials, tokens or keys. Only their existence was checked; no files were opened.",
-                  "これらの場所にはログイン情報、トークン、鍵が保存されている可能性があります。存在だけを確認し、ファイルは開いていません。",
-                  "이 위치에는 로그인 자격 증명, 토큰, 키가 저장되어 있을 수 있습니다. 존재 여부만 확인했으며 파일은 열지 않았습니다."),
+    "auth.lead": (
+        "下列位置可能保存凭据。文件只检查存在性和匹配数量；SSH 配置用于定位密钥文件。环境变量只报告名称，凭据管理器只报告条目数。",
+        "These locations may hold credentials. Files are checked for presence and counts; SSH configuration locates key files. Only environment variable names and Credential Manager entry counts are reported.",
+        "認証情報が保存される可能性がある場所です。ファイルの存在と件数を確認し、SSH 設定から鍵の場所を特定します。環境変数は名前、資格情報マネージャーは件数のみ表示します。",
+        "자격 증명이 있을 수 있는 위치입니다. 파일 존재와 수를 확인하고 SSH 설정으로 키 파일을 찾습니다. 환경 변수는 이름만, 자격 증명 관리자는 항목 수만 표시합니다."),
     "auth.clear": ("清单内的凭据位置均未发现。", "None of the listed credential locations were found.",
                    "リストにある認証情報の場所は見つかりませんでした。", "목록에 있는 자격 증명 위치는 발견되지 않았습니다."),
     "auth.unsure": ("没有确认存在的凭据位置，但有 {n} 项未能完成检查，不能视为全部未发现。",
@@ -278,22 +299,25 @@ TEXT = {
     # 钱包与未完成检查
     "wallets.skipped": ("未检查钱包扩展：本次使用了 --quick。", "Wallet extensions were not checked: --quick was used.",
                         "ウォレット拡張機能は確認していません（--quick を使用）。", "지갑 확장 프로그램을 점검하지 않았습니다(--quick 사용)."),
-    "wallets.todo": ("扩展数据被复制后，可离线暴力破解钱包密码。钱包内有资产时，新建钱包（新助记词）并转移资产。",
-                     "Once the extension data is copied, the wallet password can be brute-forced offline. If the wallet holds assets, create a new wallet (new seed phrase) and move the assets.",
-                     "拡張機能のデータがコピーされると、ウォレットのパスワードはオフラインで総当たりされる可能性があります。資産がある場合は、新しいウォレット（新しいシードフレーズ）を作成して資産を移してください。",
-                     "확장 프로그램 데이터가 복사되면 지갑 비밀번호를 오프라인에서 무차별 대입으로 풀 수 있습니다. 지갑에 자산이 있다면 새 지갑(새 시드 문구)을 만들어 자산을 옮기세요."),
-    "wallets.clear": ("已检查的浏览器配置中没有清单内的钱包扩展。", "No listed wallet extensions were found in the checked browser profiles.",
-                      "確認したブラウザープロファイルに、リストにあるウォレット拡張機能はありませんでした。",
-                      "점검한 브라우저 프로필에서 목록에 있는 지갑 확장 프로그램을 찾지 못했습니다."),
+    "wallets.todo": (
+        "发现钱包扩展对应的数据文件；文件存在性不确认其中含有私钥。请核对钱包使用情况并处理受影响的钱包。",
+        "Data files for wallet extensions were found; file presence does not confirm private keys inside. Review the wallets you used and address those affected.",
+        "ウォレット拡張機能に対応するデータファイルが見つかりました。秘密鍵の有無は確認していません。利用状況を確認し、影響を受けたウォレットに対処してください。",
+        "지갑 확장 프로그램의 데이터 파일이 발견되었습니다. 개인 키 포함 여부는 확인하지 않았습니다. 사용한 지갑과 영향을 확인해 조치하세요."),
+    "wallets.clear": (
+        "已检查的 Chrome 配置中未发现样本会读取的钱包数据文件。",
+        "No wallet data files read by the sample were found in the checked Chrome profiles.",
+        "確認した Chrome プロファイルに、サンプルの対象となるウォレットデータファイルは見つかりませんでした。",
+        "점검한 Chrome 프로필에서 샘플이 읽는 지갑 데이터 파일을 찾지 못했습니다."),
     "pending.clear": ("所有项目均已完成检查。", "All checks completed.", "すべての確認が完了しました。", "모든 점검을 마쳤습니다."),
 
     # 说明
     "about.method": ("检查方式", "How it checks", "確認方法", "점검 방식"),
     "about.method_text": (
-        "普通目标只检查路径或注册表键是否存在，不打开文件，不读取键值。浏览器数据库以共享只读方式载入内存，只识别加密前缀，不解密。",
-        "Ordinary targets are checked only for whether the path or registry key exists; files are not opened and values are not read. Browser databases are loaded into memory with shared read-only access, and only the encryption prefix is identified. Nothing is decrypted.",
-        "通常の対象は、パスまたはレジストリキーが存在するかだけを確認し、ファイルを開いたり値を読み取ったりしません。ブラウザーのデータベースは共有読み取り専用でメモリに読み込み、暗号化の接頭辞だけを判別します。復号はしません。",
-        "일반 대상은 경로나 레지스트리 키가 있는지만 확인하며, 파일을 열거나 값을 읽지 않습니다. 브라우저 데이터베이스는 공유 읽기 전용으로 메모리에 불러와 암호화 접두사만 식별하며, 복호화하지 않습니다."),
+        "文件按采集目标检查存在性，不读取秘密内容；SSH 配置与会话注册表用于定位文件。环境变量在内存中匹配规则，仅输出名称。凭据管理器仅计数，浏览器仅分类加密格式。",
+        "Files are checked for presence without reading secrets. SSH configuration and session registry values locate files. Environment values are matched in memory and only names are reported. Credential Manager entries are counted; browser encryption formats are classified.",
+        "秘密情報を読まずにファイルの存在を確認します。SSH 設定とセッションのレジストリ値でファイルを特定します。環境変数はメモリー内で判定し名前のみ表示します。資格情報は件数、ブラウザーは暗号化方式を確認します。",
+        "비밀 내용을 읽지 않고 파일 존재를 확인합니다. SSH 설정과 세션 레지스트리 값으로 파일을 찾습니다. 환경 변수 값은 메모리에서 판별하고 이름만 표시합니다. 자격 증명 관리자는 수만, 브라우저는 암호화 형식만 확인합니다."),
     "about.content": ("报告内容", "Report contents", "レポートの内容", "보고서 내용"),
     "about.content_text": (
         "站点主机名、脱敏账号和 Cookie 数量。账号不超过 4 个字符时完全隐藏，否则只保留首尾字符。报告不含密码、Cookie 值、令牌或私钥，但站点列表仍属个人隐私，不要公开分享。",
@@ -302,16 +326,16 @@ TEXT = {
         "사이트 호스트 이름, 마스킹된 계정, 쿠키 개수입니다. 4자 이하 계정은 모두 가리고, 그 밖에는 첫 글자와 마지막 글자만 남깁니다. 비밀번호, 쿠키 값, 토큰, 개인 키는 포함하지 않지만 사이트 목록도 개인 정보이므로 공개하지 마세요."),
     "about.browsers": ("浏览器范围", "Browser coverage", "対象ブラウザー", "브라우저 범위"),
     "about.browsers_text": (
-        "Chrome、Edge、Brave、Vivaldi、Opera 的 Default 与 Profile N，Opera 另含根配置。Firefox 只检查资料目录。便携版和自定义资料目录不在范围内。",
-        "Default and Profile N for Chrome, Edge, Brave, Vivaldi and Opera, plus Opera's root profile. Firefox is checked for the profile folder only. Portable builds and custom profile folders are not covered.",
-        "Chrome、Edge、Brave、Vivaldi、Opera の Default と Profile N、および Opera のルートプロファイル。Firefox はプロファイルフォルダーの有無のみ確認します。ポータブル版とカスタムのプロファイルフォルダーは対象外です。",
-        "Chrome, Edge, Brave, Vivaldi, Opera의 Default와 Profile N, 그리고 Opera 루트 프로필. Firefox는 프로필 폴더만 확인합니다. 포터블 버전과 사용자 지정 프로필 폴더는 범위에 포함되지 않습니다."),
+        "枚举 Chrome、Edge、Brave、Vivaldi、Opera 标准根目录的全部子目录。Firefox 检查各配置的 key4.db 和 logins.json；钱包检查只覆盖 Chrome。自定义根目录不在范围内。",
+        "All subfolders of the standard Chrome, Edge, Brave, Vivaldi and Opera roots are enumerated. Firefox profiles are checked for key4.db and logins.json; wallets are checked only in Chrome. Custom roots are not covered.",
+        "Chrome、Edge、Brave、Vivaldi、Opera の標準ルートの全サブフォルダーを列挙します。Firefox は各プロファイルの key4.db と logins.json を確認し、ウォレットは Chrome のみ確認します。独自のルートは対象外です。",
+        "Chrome, Edge, Brave, Vivaldi, Opera 표준 루트의 모든 하위 폴더를 열거합니다. Firefox는 프로필별 key4.db와 logins.json을 확인하며 지갑은 Chrome만 검사합니다. 사용자 지정 루트는 제외됩니다."),
     "about.skipped": ("跳过的情况", "Not checked", "対象外", "점검 제외"),
     "about.skipped_text": (
-        "网络路径、映射网络驱动器和重解析点不检查。超过 512 MiB 或被锁定的数据库记为无法检查；有未合并 WAL 的数据库只统计主库。",
-        "Network paths, mapped network drives and reparse points are not checked. Databases over 512 MiB or locked are marked unreadable; databases with an unmerged WAL are counted from the main file only.",
-        "ネットワークパス、ネットワークドライブ、再解析ポイントは確認しません。512 MiB を超える、またはロックされたデータベースは確認不可とし、未マージの WAL があるデータベースはメインファイルのみ集計します。",
-        "네트워크 경로, 네트워크 드라이브, 재분석 지점은 점검하지 않습니다. 512MiB를 넘거나 잠긴 데이터베이스는 확인 불가로 표시하며, 병합되지 않은 WAL이 있는 데이터베이스는 기본 파일만 집계합니다."),
+        "网络路径、映射网络驱动器和重解析点不检查。浏览器文件超过样本的 4 MiB 上限时单独列为样本跳过。WAL 仅统计主库快照并标为不完整；环境变量未设置列为不适用。",
+        "Network paths, mapped network drives and reparse points are not checked. Browser files above the sample limit of 4 MiB are marked as skipped by the sample. WAL databases use an incomplete main-file snapshot. Unset variables are not applicable.",
+        "ネットワークパス、ネットワークドライブ、再解析ポイントは対象外です。ブラウザーファイルがサンプルの上限 4 MiB を超える場合は別表示します。WAL はメインファイルのみの不完全な集計となり、未設定の変数は対象外です。",
+        "네트워크 경로, 네트워크 드라이브와 재분석 지점은 검사하지 않습니다. 브라우저 파일이 샘플의 4MiB 제한을 넘으면 별도로 표시합니다. WAL은 기본 파일만 읽어 불완전으로 표시하며 미설정 변수는 해당 없음입니다."),
     "about.disclaimer": ("免责声明", "Disclaimer", "免責事項", "면책 조항"),
     "about.disclaimer_text": (
         "本报告只反映 K2F 采集目标在本机的存在情况，不检测感染，也不能确认是否已泄露或未泄露。",
@@ -325,8 +349,7 @@ TEXT = {
     "cli.targets": ("本地目标清单", "local target list", "ローカルのターゲットリスト", "로컬 대상 목록"),
     "cli.out": ("本地 HTML 报告路径（.html 或 .htm）", "local HTML report path (.html or .htm)",
                 "ローカルの HTML レポートのパス（.html または .htm）", "로컬 HTML 보고서 경로(.html 또는 .htm)"),
-    "cli.quick": ("只检查目标元信息，跳过浏览器数据库和钱包扩展", "check target metadata only; skip browser databases and wallet extensions",
-                  "対象のメタ情報だけを確認し、ブラウザーのデータベースとウォレット拡張機能を省略", "대상 메타데이터만 점검하고 브라우저 데이터베이스와 지갑 확장 프로그램은 건너뜀"),
+    "cli.quick": ("跳过浏览器数据库和钱包数据检查", "skip browser database and wallet data checks", "ブラウザーのデータベースとウォレットデータを省略", "브라우저 데이터베이스와 지갑 데이터 점검 건너뜀"),
     "cli.no_browser_count": ("跳过浏览器数据库统计", "skip browser database counts", "ブラウザーのデータベース集計を省略", "브라우저 데이터베이스 집계 건너뜀"),
     "cli.no_open": ("生成报告后不自动打开浏览器", "do not open the report in a browser", "レポート作成後にブラウザーを開かない", "보고서 작성 후 브라우저를 열지 않음"),
     "cli.lang": ("报告与输出语言（默认跟随系统）", "report and output language (default: system)",
@@ -358,6 +381,17 @@ TEXT = {
     "cli.open_failed": ("无法自动打开默认浏览器，请手动打开上面的 HTML 文件。", "Could not open the default browser. Open the HTML file above manually.",
                         "既定のブラウザーを開けませんでした。上の HTML ファイルを手動で開いてください。", "기본 브라우저를 열 수 없습니다. 위 HTML 파일을 직접 여세요."),
     "cli.press_enter": ("按回车键退出…", "Press Enter to exit...", "Enter キーで終了…", "Enter 키를 눌러 종료…"),
+    "status.unset": ("不适用：环境变量未设置", "Not applicable: variable unset", "対象外：環境変数未設定", "해당 없음: 환경 변수 미설정"),
+    "status.over_cap": ("样本跳过：超过 4 MiB", "Sample skips files over 4 MiB", "サンプルは 4 MiB 超を省略", "샘플은 4MiB 초과 파일 제외"),
+    "auth.unset": ("不适用", "Not applicable", "対象外", "해당 없음"),
+    "kind.environment": ("环境变量", "Environment variable", "環境変数", "환경 변수"),
+    "kind.store": ("凭据存储", "Credential store", "認証情報ストア", "자격 증명 저장소"),
+    "browser.no_counts": (
+        "没有可统计的数据库；各库状态列在下方，读取失败项见未完成检查。",
+        "No databases could be counted. Database statuses are listed below; failures appear under Incomplete checks.",
+        "集計できるデータベースがありません。各状態は下に、読み取り失敗は未完了の確認に表示します。",
+        "집계 가능한 데이터베이스가 없습니다. 상태는 아래에, 읽기 실패는 미완료 점검에 표시됩니다."),
+    "wallets.incomplete": ("钱包检查未完成，详见未完成检查。", "Wallet checks are incomplete; see Incomplete checks.", "ウォレット確認が未完了です。未完了の確認を参照してください。", "지갑 점검이 완료되지 않았습니다. 미완료 점검을 확인하세요."),
 }
 
 

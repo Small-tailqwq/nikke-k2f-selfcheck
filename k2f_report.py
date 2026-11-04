@@ -9,9 +9,9 @@ from k2f_i18n import ACTIONS, CATEGORY_NAMES, HTML_LANG, RISK_TEXT, normalize_la
 REPORT_ICON = 'data:image/jpeg;base64,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'
 SCANNER_URL = "https://github.com/Sheisback/nikke_malware_scanner"
 CATEGORIES = tuple(CATEGORY_NAMES)
-AUTH_KINDS = {"credential", "key_material", "config"}
+AUTH_KINDS = {"credential", "key_material", "config", "environment", "store"}
 # 计数键与色调；顺序即页面优先级。
-RISKS = (("v10", "crit"), ("plain", "crit"), ("other", "warn"), ("v20", "info"), ("empty", "none"))
+RISKS = (("v10", "crit"), ("other", "warn"), ("v20", "info"), ("plain", "none"), ("empty", "none"))
 COUNT_KEYS = ("total", "v10", "v20", "other", "empty", "plain")
 # 长列表按固定行高分块，离屏分块由 content-visibility 跳过样式、布局和绘制。
 CHUNK = 100
@@ -67,7 +67,7 @@ class Text:
         if item.get("status") == "partial":
             return self("status.partial_matched", n=fmt(item.get("matches")))
         status = item.get("status")
-        return self("status." + status) if status in ("present", "absent", "unreadable", "skipped", "read") else self("status.skipped")
+        return self("status." + status) if status in ("present", "absent", "unreadable", "skipped", "read", "unset", "over_cap") else self("status.skipped")
 
 
 def e(value):
@@ -160,8 +160,7 @@ def render_browsers(report, T):
     if report.get("skip_counts"):
         parts.append('<p class="note">' + e(T("browser.skipped")) + '</p>')
     elif not counted:
-        link = '<a href="#incomplete">' + e(T("nav.incomplete")) + '</a>'
-        parts.append('<p class="note">' + e(T("browser.none", link="\0")).replace("\0", link) + '</p>')
+        parts.append('<p class="note">' + e(T("browser.no_counts")) + '</p>')
     elif not any(totals[key] for key in ("v10", "plain", "other", "v20")):
         parts.append('<p class="clear">' + e(T("browser.clear")) + '</p>')
     if any(d.get("status") == "partial" for d in databases):
@@ -187,7 +186,7 @@ def render_browsers(report, T):
             for key in ("total", "v10", "v20", "plain", "other", "empty"):
                 value = number(counts.get(key)) if counts else None
                 text = "—" if value is None else fmt(value)
-                cells.append('<b class="hot">' + text + '</b>' if key in ("v10", "plain") and value else text)
+                cells.append('<b class="hot">' + text + '</b>' if key == "v10" and value else text)
             body.append(row(e(where(database, T)), e(store_name(database, T)), e(database_state(database, T)), *cells))
         missing = len(databases) - len(listed)
         summary = T("browser.databases", n=fmt(len(listed))) + (T("browser.missing", n=fmt(missing)) if missing else "")
@@ -225,7 +224,7 @@ def target_items(report, T):
 
 def target_rows(items, T):
     ordered = sorted(items, key=lambda i: (not i["hit"], not i["incomplete"], i["label"]))
-    kinds = ("credential", "key_material", "config", "browser", "general", "program")
+    kinds = ("credential", "key_material", "config", "browser", "general", "program", "environment", "store")
     return rows("cols-t", (T("col.location"), T("col.type"), T("col.result")), [
         row("<code>" + e(i["label"]) + "</code>",
             e(T("kind.registry") if i.get("registry") else T("kind." + (i["kind"] if i["kind"] in kinds else "config"))),
@@ -234,7 +233,10 @@ def target_rows(items, T):
 
 
 def render_targets(items, T):
-    auth = [i for i in items if i["kind"] in AUTH_KINDS]
+    applicable = [i for i in items if i["source"].get("status") not in ("unset", "over_cap")]
+    unset = [i for i in items if i["source"].get("status") == "unset"]
+    over_cap = [i for i in items if i["source"].get("status") == "over_cap"]
+    auth = [i for i in applicable if i["kind"] in AUTH_KINDS]
     groups, uncertain, quiet = [], [], []
     for category in CATEGORIES:
         members = [i for i in auth if i["category"] == category]
@@ -269,7 +271,11 @@ def render_targets(items, T):
         html += '<div class="quiet"><h3>' + e(T("auth.uncertain")) + '</h3>' + "".join(uncertain) + '</div>'
     if quiet:
         html += '<div class="quiet"><h3>' + e(T("auth.quiet")) + '</h3>' + "".join(quiet) + '</div>'
-    other = [i for i in items if i["kind"] not in AUTH_KINDS]
+    if unset:
+        html += '<details class="quiet"><summary>' + e(T("auth.unset")) + '</summary>' + target_rows(unset, T) + '</details>'
+    if over_cap:
+        html += '<details class="quiet"><summary>' + e(T("status.over_cap")) + '</summary>' + target_rows(over_cap, T) + '</details>'
+    other = [i for i in applicable if i["kind"] not in AUTH_KINDS]
     if other:
         html += ('<div class="quiet"><h3>' + e(T("auth.other")) + '</h3><details><summary>' + e(T("auth.other_summary"))
                  + '<span class="count">' + fmt(sum(i["hit"] for i in other)) + ' / ' + fmt(len(other)) + '</span></summary>'
@@ -284,12 +290,16 @@ def render_wallets(report, T):
     found = [w for w in wallets if hit(w)]
     if report.get("skip_wallets"):
         return '<p class="note">' + e(T("wallets.skipped")) + '</p>', None
-    html = '<p class="todo">' + e(T("wallets.todo")) + '</p>' if found else '<p class="clear">' + e(T("wallets.clear")) + '</p>'
+    incomplete = (any(w.get("status") in ("partial", "unreadable", "skipped") for w in wallets)
+                  or any(c.get("browser") == "Chrome" and c.get("status") not in ("present", "absent") for c in report.get("coverage", [])))
+    html = ('<p class="todo">' + e(T("wallets.todo")) + '</p>' if found else
+            '<p class="note">' + e(T("wallets.incomplete")) + '</p>' if incomplete else
+            '<p class="clear">' + e(T("wallets.clear")) + '</p>')
     if wallets:
         html += rows("cols-w", (T("col.browser"), T("col.extension"), T("col.result")), [
-            row(e(where(w, T)), "<code>" + e(w.get("id", "")) + "</code>",
+            row(e(where(w, T)), "<code>" + e(w.get("id", "") + " · " + w.get("container", "")) + "</code>",
                 state(T.status(w), "hit" if hit(w) else "inc")) for w in wallets])
-    return html, len(found)
+    return html, len(found) if found or not incomplete else None
 
 
 def incomplete_items(report, items, T):
@@ -345,7 +355,7 @@ def render_report(report, lang="zh"):
         return summary_row(tone, T(label), totals[key] if counted else None, browser_meta(key),
                            "#risk-" + key if totals[key] else "#browser", T)
 
-    summary = [browser_row("crit", "sum.v10", "v10"), browser_row("crit", "sum.plain", "plain")]
+    summary = [browser_row("crit", "sum.v10", "v10")]
     if totals["other"]:
         summary.append(browser_row("warn", "sum.other", "other"))
     summary += [
@@ -353,6 +363,7 @@ def render_report(report, lang="zh"):
                     T.unit("unit.places", target_hits) + (T("unit.groups", n=fmt(target_groups)) if target_hits else ""), "#auth", T),
         summary_row("warn", T("sum.wallets"), wallet_hits, T("unit.found"), "#wallets", T),
         browser_row("info", "sum.v20", "v20"),
+        browser_row("none", "sum.plain", "plain"),
         summary_row("info", T("sum.pending"), len(pending), T.unit("unit.items", len(pending)), "#incomplete", T),
     ]
     pending_html = (rows("cols-inc", (T("col.item"), T("col.reason")), [row(name, e(reason)) for name, reason in pending])

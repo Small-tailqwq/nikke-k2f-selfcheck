@@ -31,7 +31,7 @@ python k2f_selfcheck.py
 | `--lang` | Report and output language: `zh`, `en`, `ja`, `ko`. Defaults to the Windows display language; other languages fall back to English |
 | `--out` | Report path (`.html` or `.htm`). Existing files are never overwritten |
 | `--no-open` | Save the report without opening a browser |
-| `--quick` | Skip browser databases and wallet extensions; check paths only |
+| `--quick` | Skip Chromium databases and wallets; still check other targets |
 | `--no-browser-count` | Skip browser databases |
 | `--targets` | Target list to use; defaults to `k2f_targets.json` next to the script |
 
@@ -42,7 +42,7 @@ Exit code `0` means the report was written; `2` means the environment, input or 
 The report opens with a short notice; the "Got it" button unlocks after 6 seconds. The body has six parts: summary, browser data, credential locations, wallet extensions, incomplete checks and about.
 
 - **v10: high risk.** Any program running as the current user can decrypt these. For each site, change the password, sign out of other devices and turn on two-factor authentication.
-- **Unencrypted cookies: high risk.** They work as soon as they are copied. Sign out on those sites to end the sessions.
+- **Unencrypted cookies: not read by this sample.** The sample queries `encrypted_value`. Records stored only in `value` are shown separately and are not counted as high-risk items for this sample.
 - **Unknown format:** the protection cannot be determined; treat these as v10.
 - **v20: lower.** Protected by app-bound encryption; decrypting them requires admin rights or injecting into the browser process. After handling v10, sign out of important sites.
 - **Credential locations:** config files, credential files and key folders that exist, grouped by tool, with how to rotate each group. Program folders and ordinary user folders are listed separately and are not counted as credential locations.
@@ -53,12 +53,14 @@ In the details, passwords are listed per record with site, masked account and br
 
 ## Scope and privacy
 
-- Ordinary targets are checked only for whether the path or registry key exists. Files are not opened and values are not read.
-- Browser databases are loaded into memory with shared read-only access. Only the encryption prefix is identified; nothing is decrypted and the source files are not written. Covers `Default` and `Profile N` for Chrome, Edge, Brave, Vivaldi and Opera, plus Opera's root profile. Firefox is checked for the profile folder only. Portable builds and custom profile folders are not covered.
-- The report keeps only site host names, browser, profile number and masked accounts (fully hidden when 4 characters or fewer, otherwise only the first and last characters are kept). URL paths, parameters, passwords, cookie names and values, tokens and private keys never enter the report. The site list is still private, so do not share the report publicly.
-- Network paths, mapped network drives and reparse points are not checked. Databases over 512 MiB or locked are marked unreadable; databases with an unmerged WAL are counted from the main file only and marked incomplete. Items that were not checked are never counted as zero.
+- Ordinary targets use path and file metadata only. Checks also cover project configuration, Firefox `key4.db` / `logins.json`, GPG key files, files listed in `KUBECONFIG`, and NIKKE credential files, without reading their secret contents.
+- Project searches reach depth 2, skip `.git` / `node_modules`, and exclude `.example` / `.sample` / `.template` files. SSH configuration and PuTTY / WinSCP sessions are used only to find external key paths and check whether a password field exists.
+- Process and user/system registry environment variables are filtered with the sample's rules; only variable names enter the report. Windows Credential Manager contributes an entry count. Environment values, credential contents and actual custom paths are not included.
+- Chromium databases are loaded into memory with shared read-only access to identify encryption prefixes. Nothing is decrypted or written back. All profile subdirectories under known Chrome, Edge, Brave, Vivaldi and Opera roots are checked; Opera root databases and portable profiles outside those roots are excluded. Wallet checks cover only Chrome and require both an installed extension and `.ldb` / `.sst` / `.log` files in its sample-selected container.
+- Browser details retain site host names, profile numbers and masked accounts (fully hidden up to 4 characters, otherwise first and last characters only). URL paths, parameters, passwords, cookie names and values, tokens and private keys are omitted. Site lists and environment variable names are still private; do not share reports publicly.
+- Network paths, mapped network drives and reparse points are skipped. Unset environment variables are not applicable; browser files above the sample's 4 MiB limit are marked as skipped by the sample. Read failures remain incomplete. Databases with unmerged WAL data are counted from the main file only and marked incomplete.
 
-The target list comes from the string table of the K2F LuaJIT bundle (SHA-256 `cc0ad05bfe85940a6067b3a72c182d3953339129206634141926d5d0b35973ec`) described in public analysis.
+Paths and detection rules were statically recovered from the K2F LuaJIT bundle (SHA-256 `cc0ad05bfe85940a6067b3a72c182d3953339129206634141926d5d0b35973ec`). File-presence findings identify potential storage locations; the tool does not reproduce the sample's extraction or decryption of configuration, history or session contents.
 
 ## Related projects
 

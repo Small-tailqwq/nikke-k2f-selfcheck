@@ -9,11 +9,12 @@ import socket
 import sqlite3
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 from html.parser import HTMLParser
 
 import re
 import k2f_i18n
+import k2f_detection
 import k2f_selfcheck as scanner
 from k2f_report import render_report
 
@@ -60,7 +61,7 @@ class LocalReportTests(unittest.TestCase):
         before = database.read_bytes()
         result = scanner.browser_database(str(database), "cookies")
         self.assertEqual(result["status"], "read")
-        self.assertEqual(result["counts"], {"total": 6, "v10": 1, "v20": 1, "other": 1, "empty": 1, "plain": 2})
+        self.assertEqual(result["counts"], {"total": 6, "v10": 2, "v20": 1, "other": 1, "empty": 1, "plain": 1})
         self.assertNotIn(SECRET, repr(result))
         self.assertEqual(database.read_bytes(), before)
         self.assertEqual(list(self.root.iterdir()), [database])
@@ -103,7 +104,7 @@ class LocalReportTests(unittest.TestCase):
             result = scanner.browser_database(str(database), "cookies")
             self.assertEqual(result["status"], "partial")
             self.assertEqual(result["counts"]["total"], 6)
-            self.assertEqual(result["counts"]["v10"], 1)
+            self.assertEqual(result["counts"]["v10"], 2)
             self.assertEqual({p.name: p.read_bytes() for p in self.root.iterdir()}, before)
         finally:
             connection.close()
@@ -146,13 +147,13 @@ class LocalReportTests(unittest.TestCase):
         with patch.object(scanner.os, "scandir", side_effect=PermissionError(SECRET)):
             self.assertEqual(scanner.check_path(str(self.root / "*.json"))["status"], "partial")
 
-    def test_all_numbered_profiles_and_opera_root(self):
+    def test_custom_profile_names_are_scanned_but_not_reported(self):
         for name in ("Default", "Profile 1", "Profile 29", "PRIVATE-NAME"):
             (self.root / name).mkdir()
         profiles = scanner.browser_profiles(str(self.root))
-        self.assertEqual(len(profiles), 3)
-        self.assertNotIn("PRIVATE-NAME", repr(profiles))
-        self.assertEqual(len(scanner.browser_profiles(str(self.root), flat=True)), 4)
+        self.assertEqual(len(profiles), 4)
+        self.assertNotIn("PRIVATE-NAME", repr([name for name, _ in profiles]))
+        self.assertEqual(len(scanner.browser_profiles(str(self.root), flat=True)), 5)
 
     def test_report_escapes_untrusted_fields_and_ignores_raw_secrets(self):
         html = render_report({"generated_at": '<script>alert("x")</script>',
@@ -164,7 +165,7 @@ class LocalReportTests(unittest.TestCase):
         self.assertNotIn("<script", html)
         self.assertNotIn('<img src="https://example.invalid">', html)
         self.assertIn("&lt;script&gt;", html)
-        self.assertIn("没有打开文件", html)
+        self.assertIn("不读取秘密内容", html)
         self.assertIn("default-src 'none'", html)
         self.assertNotIn('rel="stylesheet"', html)
         self.assertIn("不能确认是否已泄露", html)
@@ -199,7 +200,7 @@ class LocalReportTests(unittest.TestCase):
                                              "counts": {"total": 3, "v10": 1, "v20": 1, "plain": 1}}]})
         for key in ("v10", "plain", "v20"):
             self.assertIn('id="risk-' + key + '"', html)
-        self.assertIn('<b>未加密 Cookie</b><span class="level">高风险</span>', html)
+        self.assertIn('<b>未加密 Cookie</b><span class="level">样本不读取</span>', html)
         self.assertIn('<b>v20</b><span class="level">较低</span>', html)
         self.assertLess(html.index('id="risk-v10"'), html.index('id="risk-v20"'))
 
@@ -408,6 +409,206 @@ class LocalReportTests(unittest.TestCase):
         self.assertTrue(output.is_file())
         self.assertIn("无法自动打开默认浏览器", stdout.getvalue())
         self.assertNotIn(SECRET, stdout.getvalue())
+
+    def test_unset_paths_are_not_incomplete_or_absent(self):
+        with patch.dict(os.environ, {}, clear=True):
+            result = scanner.check_path(r"$CODEX_HOME\auth.json")
+            self.assertEqual(result, {"status": "unset"})
+        with patch.dict(os.environ, {"CODEX_HOME": ""}):
+            self.assertEqual(scanner.check_path(r"$CODEX_HOME\auth.json"), {"status": "unset"})
+        html = render_report({"results": [dict(result, template=r"$CODEX_HOME\auth.json", kind="credential", report_category="AI 工具")]})
+        self.assertIn("不适用：环境变量未设置", html)
+        pending = html[html.index('id="incomplete"'):html.index('id="about"')]
+        self.assertNotIn("CODEX_HOME", pending)
+
+    def test_explicit_environment_paths_and_network_redirect(self):
+        (self.root / "auth.json").write_text(SECRET)
+        with patch.dict(os.environ, {"CODEX_HOME": str(self.root)}):
+            self.assertEqual(scanner.check_path(r"$CODEX_HOME\auth.json")["status"], "present")
+        with patch.dict(os.environ, {"CODEX_HOME": r"\\example.invalid\share"}), \
+                patch.object(scanner.os, "lstat", side_effect=AssertionError("network accessed")):
+            self.assertEqual(scanner.check_path(r"$CODEX_HOME\auth.json")["status"], "skipped")
+
+    def test_project_files_depth_exclusions_and_no_content_reads(self):
+        paths = (".env", "one/appsettings.Production.json", "one/two/main.tfvars", "one/two/three/.env",
+                 "node_modules/.env", ".git/.env", ".env.example", "one/credentials.sample", "one/docker-compose.yaml")
+        for name in paths:
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(SECRET)
+        with patch("builtins.open", side_effect=AssertionError("file contents read")):
+            self.assertEqual(scanner.scan_project_files(str(self.root)), {"status": "matched", "matches": 4})
+        real_scandir = os.scandir
+        def denied(path):
+            if Path(path) == self.root / "one":
+                raise PermissionError(SECRET)
+            return real_scandir(path)
+        with patch.object(scanner.os, "scandir", side_effect=denied):
+            self.assertEqual(scanner.scan_project_files(str(self.root)), {"status": "partial", "matches": 1})
+
+    def test_wallet_containers_require_install_and_matching_data_files(self):
+        ids = ("nkbihfbeogaeaoehlefnkodbefgpgknn", "hnfanknocfeofbddgcijnmhnfnkdnaad", "opcgpfmipidbgpenhmajoajpbobppdil")
+        containers = ("Local Extension Settings/" + ids[0], "Local Storage/leveldb",
+                      "IndexedDB/chrome-extension_" + ids[2] + "_0.indexeddb.leveldb")
+        for extension_id, container in zip(ids, containers):
+            (self.root / "Extensions" / extension_id).mkdir(parents=True)
+            directory = self.root / container
+            directory.mkdir(parents=True)
+            (directory / "LOCK").write_text(SECRET)
+            self.assertEqual(scanner.check_wallet(str(self.root), extension_id)["status"], "absent")
+            for name in ("00001.ldb", "00002.sst", "00003.log"):
+                (directory / name).write_text(SECRET)
+            with patch("builtins.open", side_effect=AssertionError("wallet data read")):
+                result = scanner.check_wallet(str(self.root), extension_id)
+            self.assertEqual(result["matches"], 3)
+            self.assertNotIn(SECRET, repr(result))
+        self.assertEqual(scanner.check_wallet(str(self.root), "a" * 32)["status"], "absent")
+
+    def test_wallets_only_scan_chrome_and_failures_do_not_report_clear(self):
+        extension_id = "nkbihfbeogaeaoehlefnkodbefgpgknn"
+        for browser in ("Chrome", "Edge"):
+            profile = self.root / browser / "PRIVATE-NAME"
+            (profile / "Extensions" / extension_id).mkdir(parents=True)
+            data = profile / "Local Extension Settings" / extension_id
+            data.mkdir(parents=True)
+            (data / "00001.ldb").write_text(SECRET)
+        roots = [(name, str(self.root / name), False) for name in ("Chrome", "Edge")]
+        with patch.object(scanner, "browser_roots", return_value=roots):
+            _, wallets, _ = scanner.scan_browsers([extension_id], skip_counts=True)
+        self.assertEqual(len(wallets), 1)
+        self.assertEqual(wallets[0]["browser"], "Chrome")
+        self.assertNotIn("PRIVATE-NAME", repr(wallets))
+        html = render_report({"coverage": [{"browser": "Chrome", "status": "unreadable"}]})
+        wallet_section = html[html.index('id="wallets"'):html.index('id="incomplete"')]
+        self.assertIn("钱包检查未完成", wallet_section)
+
+    def test_sample_browser_size_limit_does_not_read_large_files(self):
+        database = self.root / "Cookies"
+        with database.open("wb") as stream:
+            stream.truncate(4 * 1024 * 1024 + 1)
+        with patch.object(scanner, "read_shared", side_effect=AssertionError("large file read")):
+            result = scanner.browser_database(str(database), "cookies")
+        self.assertEqual(result, {"status": "over_cap"})
+        self.assertIn("超过 4 MiB", render_report({"databases": [dict(result, browser="Chrome")]}))
+
+    def test_environment_names_only_and_detector_boundaries(self):
+        targets = json.loads(Path(__file__).with_name("k2f_targets.json").read_text(encoding="utf-8"))
+        rules = targets["detector_rules"]
+        github = "ghp_" + "A" * 36
+        self.assertTrue(k2f_detection.environment_candidate("UNRELATED", github, rules))
+        self.assertFalse(k2f_detection.environment_candidate("UNRELATED", github + "A", rules))
+        self.assertTrue(k2f_detection.environment_candidate("SERVICE_API_KEY", SECRET, rules))
+        for name in ("PUBLIC_API_KEY", "SERVICE_CLIENT_ID", "PATH"):
+            self.assertFalse(k2f_detection.environment_candidate(name, SECRET, rules))
+        self.assertFalse(k2f_detection.environment_candidate("SERVICE_API_KEY", str(self.root), rules))
+        with patch.dict(os.environ, {"SERVICE_API_KEY": SECRET, "UNRELATED": github}, clear=True), \
+                patch.object(scanner, "registry_values", return_value=iter(())):
+            results = scanner.scan_environment(rules)
+        self.assertNotIn(SECRET, repr(results))
+        self.assertNotIn(github, repr(results))
+        self.assertEqual(sum(scanner_result["status"] == "present" for scanner_result in results), 2)
+        for lang in k2f_i18n.LANGS:
+            html = render_report({"results": results}, lang)
+            self.assertNotIn(SECRET, html)
+            if lang in ("en", "ko"):
+                self.assertEqual(re.findall(r"[\u3400-\u9fff\u3040-\u30ff]+", html), [])
+
+    def test_kube_path_list_keeps_only_slot_labels(self):
+        (self.root / "config").write_text(SECRET)
+        value = str(self.root / "config") + ";" + r"\\example.invalid\config"
+        with patch.dict(os.environ, {"KUBECONFIG": value}):
+            results = scanner.scan_kube()
+        self.assertEqual([r["status"] for r in results], ["present", "skipped"])
+        self.assertNotIn(str(self.root), repr(results))
+
+    def test_gpg_home_and_firefox_file_locations(self):
+        home = self.root / "gpg"
+        (home / "private-keys-v1.d").mkdir(parents=True)
+        (home / "private-keys-v1.d" / "secret.key").write_text(SECRET)
+        profile = self.root / "Mozilla" / "Firefox" / "Profiles" / "PRIVATE-NAME"
+        profile.mkdir(parents=True)
+        (profile / "logins.json").write_text(SECRET)
+        with patch.dict(os.environ, {"GNUPGHOME": str(home), "APPDATA": str(self.root)}), \
+                patch("builtins.open", side_effect=AssertionError("secret file read")):
+            gpg = scanner.scan_gpg()
+            firefox = scanner.scan_firefox()
+        self.assertEqual(gpg[-1]["matches"], 1)
+        self.assertEqual([r["status"] for r in firefox], ["absent", "present"])
+        self.assertNotIn("PRIVATE-NAME", repr(firefox))
+        self.assertNotIn(str(home), repr(gpg))
+
+    def test_ssh_include_and_external_identity_do_not_read_private_key(self):
+        ssh = self.root / ".ssh"
+        ssh.mkdir()
+        private = self.root / "PRIVATE-KEY"
+        private.write_text(SECRET)
+        (ssh / "config").write_text("Include extra\n")
+        (ssh / "extra").write_text("Host server\n IdentityFile " + str(private) + "\nInclude config\n")
+        real_open = open
+        def read_config_only(path, *args, **kwargs):
+            self.assertNotEqual(Path(path), private)
+            return real_open(path, *args, **kwargs)
+        with patch.dict(os.environ, {"USERPROFILE": str(self.root)}), patch("builtins.open", side_effect=read_config_only):
+            results = scanner.scan_ssh_references()
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["status"], "present")
+        self.assertNotIn(str(private), repr(results))
+        self.assertNotIn(SECRET, repr(results))
+
+    def test_credential_manager_only_reads_count_and_always_frees(self):
+        api = Mock()
+        def enumerate_credentials(name, flags, count, buffer):
+            count._obj.value = 7
+            buffer._obj.value = 1234
+            return True
+        api.CredEnumerateW.side_effect = enumerate_credentials
+        with patch.object(scanner.ctypes, "WinDLL", return_value=api):
+            self.assertEqual(scanner.credential_manager_count(), {"status": "matched", "matches": 7})
+        api.CredFree.assert_called_once()
+        api.CredEnumerateW.side_effect = None
+        api.CredEnumerateW.return_value = False
+        with patch.object(scanner.ctypes, "WinDLL", return_value=api), patch.object(scanner.ctypes, "get_last_error", return_value=1168):
+            self.assertEqual(scanner.credential_manager_count(), {"status": "absent"})
+
+    def test_sessions_report_key_presence_without_password_or_session_name(self):
+        key_file = self.root / "private.ppk"
+        key_file.write_text(SECRET)
+        key = Mock()
+        key.__enter__ = Mock(return_value=key)
+        key.__exit__ = Mock(return_value=False)
+        def query(handle, name):
+            return (str(key_file) if name == "PublicKeyFile" else SECRET), scanner.winreg.REG_SZ
+        with patch.object(scanner.winreg, "OpenKey", return_value=key), \
+                patch.object(scanner.winreg, "QueryInfoKey", return_value=(1, 0, 0)), \
+                patch.object(scanner.winreg, "EnumKey", return_value="PRIVATE-SESSION"), \
+                patch.object(scanner.winreg, "QueryValueEx", side_effect=query), \
+                patch("builtins.open", side_effect=AssertionError("private key opened")):
+            results = scanner.scan_sessions()
+        self.assertEqual(len(results), 3)
+        self.assertTrue(all(r["status"] == "present" for r in results))
+        for hidden in (SECRET, "PRIVATE-SESSION", str(key_file)):
+            self.assertNotIn(hidden, repr(results))
+
+    def test_additional_surfaces_end_to_end_with_synthetic_profile(self):
+        project = self.root / "code"
+        project.mkdir()
+        (project / ".env").write_text(SECRET)
+        profile = self.root / "Mozilla" / "Firefox" / "Profiles" / "PRIVATE-PROFILE"
+        profile.mkdir(parents=True)
+        (profile / "logins.json").write_text(SECRET)
+        targets = self.root / "targets.json"
+        targets.write_text(json.dumps({"paths": [], "project_roots": [r"%USERPROFILE%\code"], "additional_surfaces": True}), encoding="utf-8")
+        output = self.root / "report.html"
+        env = {"USERPROFILE": str(self.root), "APPDATA": str(self.root), "LOCALAPPDATA": str(self.root), "SERVICE_API_KEY": SECRET}
+        with patch.dict(os.environ, env, clear=True), patch.object(scanner.winreg, "OpenKey", side_effect=FileNotFoundError), \
+                patch.object(scanner, "credential_manager_count", return_value={"status": "matched", "matches": 2}), \
+                patch.object(socket, "socket", side_effect=AssertionError("network attempted")), contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(scanner.main(["--targets", str(targets), "--out", str(output), "--quick", "--no-open", "--lang", "en"]), 0)
+        html = output.read_text(encoding="utf-8")
+        for label in ("Project configuration", "env:process:SERVICE_API_KEY", "Windows Credential Manager", "logins.json", "Not applicable"):
+            self.assertIn(label, html)
+        for hidden in (SECRET, str(self.root), "PRIVATE-PROFILE"):
+            self.assertNotIn(hidden, html)
 
 
 if __name__ == "__main__":
