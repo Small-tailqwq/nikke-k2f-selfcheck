@@ -1,0 +1,1178 @@
+{
+ "source": {
+  "sample_sha256": "cc0ad05bfe85940a6067b3a72c182d3953339129206634141926d5d0b35973ec",
+  "strings_count": 1790,
+  "path_templates": 224,
+  "registry_keys": 4
+ },
+ "paths": [
+  {
+   "idx": 1,
+   "template": "~\\\\.fly\\\\config.yml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 6,
+   "template": "%USERPROFILE%\\\\.config\\\\stripe\\\\config.toml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 7,
+   "template": "~\\\\.zsh_history",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 11,
+   "template": "%TEMP%\\\\k2f-bcreds-",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 23,
+   "template": "~\\\\.circleci\\\\cli.yml",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 30,
+   "template": "%LOCALAPPDATA%\\\\snowflake\\\\config.toml",
+   "category": "数据库 / 数据存储"
+  },
+  {
+   "idx": 43,
+   "template": "~\\\\.dsh\\\\.credentials.yaml",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 66,
+   "template": "%USERPROFILE%\\\\source",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 69,
+   "template": "~\\\\.config\\\\git\\\\credentials",
+   "category": "Git / VCS"
+  },
+  {
+   "idx": 78,
+   "template": "~\\\\.config\\\\tc\\\\config.yml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 113,
+   "template": "~\\\\.gitconfig",
+   "category": "Git / VCS"
+  },
+  {
+   "idx": 136,
+   "template": "%USERPROFILE%\\\\.config\\\\containers\\\\auth.json",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 139,
+   "template": "%USERPROFILE%\\\\Documents",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 151,
+   "template": "%APPDATA%\\\\Cursor\\\\User\\\\globalStorage\\\\**\\\\*.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 154,
+   "template": "%PROGRAMDATA%\\\\pip\\\\pip.ini",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 158,
+   "template": "~\\\\.oci\\\\config",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 161,
+   "template": "%APPDATA%\\\\Windsurf\\\\User\\\\globalStorage\\\\**\\\\*.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 173,
+   "template": "~\\\\.oraclebmc\\\\config",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 175,
+   "template": "%APPDATA%\\\\gcloud\\\\access_tokens.db",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 183,
+   "template": "C:\\\\GitLab-Runner\\\\config.toml",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 189,
+   "template": "C:\\\\buildkite-agent\\\\buildkite-agent.cfg",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 192,
+   "template": "~\\\\.yarnrc",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 197,
+   "template": "~\\\\mc\\\\config.json",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 198,
+   "template": "%LOCALAPPDATA%\\\\Vivaldi\\\\User Data",
+   "category": "浏览器"
+  },
+  {
+   "idx": 199,
+   "template": "%USERPROFILE%\\\\.config\\\\.wrangler\\\\config\\\\default.toml",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 201,
+   "template": "~\\\\.codex\\\\auth.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 207,
+   "template": "~\\\\.cursor\\\\mcp.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 218,
+   "template": "~\\\\.qwen\\\\settings.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 228,
+   "template": "%LOCALAPPDATA%\\\\Google\\\\Chrome\\\\User Data\\\\PlatformExperienceHelper",
+   "category": "浏览器"
+  },
+  {
+   "idx": 249,
+   "template": "%LOCALAPPDATA%\\\\ContinuumIO\\\\binstar\\\\*.token",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 250,
+   "template": "%APPDATA%\\\\Code\\\\User\\\\globalStorage\\\\**\\\\*.json",
+   "category": "SSH / GPG / 密钥"
+  },
+  {
+   "idx": 252,
+   "template": "%APPDATA%\\\\rclone\\\\rclone.conf",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 258,
+   "template": "~\\\\.argocd\\\\config",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 263,
+   "template": "~\\\\.kaggle\\\\access_token",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 286,
+   "template": "~\\\\.config\\\\glab-cli\\\\config.yml",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 288,
+   "template": "~\\\\.s3cfg",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 305,
+   "template": "~\\\\.claude\\\\settings.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 315,
+   "template": "%APPDATA%\\\\Cursor\\\\User\\\\globalStorage\\\\state.vscdb",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 318,
+   "template": "~\\\\.config\\\\circleci\\\\config.yml",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 330,
+   "template": "%APPDATA%\\\\xdg.data\\\\com.vercel.cli\\\\auth.json",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 332,
+   "template": "%APPDATA%\\\\terraform.rc",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 339,
+   "template": "~\\\\.anyscale\\\\credentials.json",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 345,
+   "template": "~\\\\.continue\\\\config.yaml",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 346,
+   "template": "%APPDATA%\\\\Code - Insiders\\\\User\\\\globalStorage\\\\state.vscdb",
+   "category": "SSH / GPG / 密钥"
+  },
+  {
+   "idx": 347,
+   "template": "~\\\\.keys\\\\*",
+   "category": "SSH / GPG / 密钥"
+  },
+  {
+   "idx": 351,
+   "template": "%APPDATA%\\\\Opera Software\\\\Opera Stable",
+   "category": "浏览器"
+  },
+  {
+   "idx": 354,
+   "template": "~\\\\.b2_account_info",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 369,
+   "template": "%APPDATA%\\\\netlify\\\\Config\\\\config.json",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 390,
+   "template": "~\\\\.dogrc",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 392,
+   "template": "%APPDATA%\\\\gcloud\\\\credentials.db",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 395,
+   "template": "~\\\\.yarnrc.yml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 401,
+   "template": "%ProgramW6432%\\\\Google\\\\Chrome\\\\Application",
+   "category": "浏览器"
+  },
+  {
+   "idx": 403,
+   "template": "~\\\\.npmrc",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 411,
+   "template": "C:\\\\Program Files\\\\Jenkins\\\\secrets\\\\initialAdminPassword",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 417,
+   "template": "~\\\\.ssh\\\\config",
+   "category": "SSH / GPG / 密钥"
+  },
+  {
+   "idx": 421,
+   "template": "~\\\\.config\\\\age\\\\*",
+   "category": "SSH / GPG / 密钥"
+  },
+  {
+   "idx": 426,
+   "template": "%LOCALAPPDATA%\\\\snowflake\\\\connections.toml",
+   "category": "数据库 / 数据存储"
+  },
+  {
+   "idx": 433,
+   "template": "~\\\\.Azure\\\\accessTokens.json",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 436,
+   "template": "~\\\\.cache\\\\huggingface\\\\token",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 438,
+   "template": "%ProgramFiles%\\\\Google\\\\Chrome\\\\Application",
+   "category": "浏览器"
+  },
+  {
+   "idx": 445,
+   "template": "%APPDATA%\\\\GitHub CLI\\\\hosts.yml",
+   "category": "Git / VCS"
+  },
+  {
+   "idx": 446,
+   "template": "~\\\\.vault-token",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 455,
+   "template": "C:\\\\config.toml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 480,
+   "template": "~\\\\.aws\\\\sso\\\\cache\\\\*.json",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 488,
+   "template": "~\\\\.cloudsmith\\\\credentials.ini",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 489,
+   "template": "%APPDATA%\\\\gnupg",
+   "category": "SSH / GPG / 密钥"
+  },
+  {
+   "idx": 497,
+   "template": "~\\\\.copilot\\\\mcp-config.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 504,
+   "template": "~\\\\.snowflake\\\\config.toml",
+   "category": "数据库 / 数据存储"
+  },
+  {
+   "idx": 510,
+   "template": "~\\\\.config\\\\linode-cli",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 512,
+   "template": "~\\\\.codex\\\\config.toml",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 532,
+   "template": "~\\\\.modal.toml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 539,
+   "template": "%APPDATA%\\\\Cursor\\\\User\\\\settings.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 542,
+   "template": "%APPDATA%\\\\Code\\\\User\\\\globalStorage\\\\state.vscdb",
+   "category": "SSH / GPG / 密钥"
+  },
+  {
+   "idx": 547,
+   "template": "~\\\\.docker\\\\config.json",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 566,
+   "template": "~\\\\.jfrog\\\\jfrog-cli.conf",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 572,
+   "template": "%PROGRAMDATA%\\\\Git\\\\config",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 575,
+   "template": "%APPDATA%\\\\dart\\\\pub-tokens.json",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 584,
+   "template": "%APPDATA%\\\\pip\\\\pip.ini",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 587,
+   "template": "~\\\\.config\\\\planetscale\\\\access-token",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 596,
+   "template": "%APPDATA%\\\\helm\\\\repositories.yaml",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 600,
+   "template": "%LOCALAPPDATA%\\\\ngrok\\\\ngrok.yml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 607,
+   "template": "%USERPROFILE%\\\\.config\\\\configstore\\\\snyk.json",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 611,
+   "template": "~\\\\.config\\\\git\\\\config",
+   "category": "Git / VCS"
+  },
+  {
+   "idx": 619,
+   "template": "~\\\\.python_history",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 625,
+   "template": "~\\\\.twilio-cli\\\\config.json",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 633,
+   "template": "%APPDATA%\\\\Code\\\\User\\\\mcp.json",
+   "category": "编辑器密钥存储"
+  },
+  {
+   "idx": 648,
+   "template": "~\\\\pip\\\\pip.ini",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 650,
+   "template": "%APPDATA%\\\\cloudsmith\\\\credentials.ini",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 667,
+   "template": "%APPDATA%\\\\fish\\\\fish_history",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 691,
+   "template": "~\\\\.sentryclirc",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 694,
+   "template": "~\\\\.kube\\\\config",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 702,
+   "template": "%APPDATA%\\\\octopus\\\\cli_config.json",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 708,
+   "template": "%APPDATA%\\\\Code - Insiders\\\\User\\\\settings.json",
+   "category": "编辑器密钥存储"
+  },
+  {
+   "idx": 709,
+   "template": "~\\\\.Azure\\\\msal_token_cache.bin",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 710,
+   "template": "%USERPROFILE%",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 713,
+   "template": "~\\\\.terraformrc",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 717,
+   "template": "~\\\\.usacloud\\\\*\\\\config.json",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 732,
+   "template": "%LOCALAPPDATA%\\\\Google\\\\Chrome\\\\Application",
+   "category": "浏览器"
+  },
+  {
+   "idx": 766,
+   "template": "~\\\\.certs\\\\*",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 776,
+   "template": "~\\\\.netrc",
+   "category": "Git / VCS"
+  },
+  {
+   "idx": 782,
+   "template": "~\\\\.cargo\\\\credentials.toml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 786,
+   "template": "%APPDATA%\\\\terraform.d\\\\credentials.tfrc.json",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 795,
+   "template": "~\\\\.pypirc",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 803,
+   "template": "%APPDATA%\\\\Code\\\\User\\\\profiles\\\\*\\\\settings.json",
+   "category": "编辑器密钥存储"
+  },
+  {
+   "idx": 804,
+   "template": "~\\\\.aws\\\\sso\\\\cache\\\\kiro-auth-token.json",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 813,
+   "template": "~\\\\.sbt\\\\.credentials",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 822,
+   "template": "~\\\\.aws\\\\cli\\\\cache\\\\*.json",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 823,
+   "template": "%APPDATA%\\\\.wrangler\\\\config\\\\default.toml",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 829,
+   "template": "%APPDATA%\\\\nikke_launcher",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 831,
+   "template": "~\\\\.ssh\\\\",
+   "category": "SSH / GPG / 密钥"
+  },
+  {
+   "idx": 841,
+   "template": "C:\\\\Windows\\\\System32\\\\winsqlite3.dll",
+   "category": "数据库 / 数据存储"
+  },
+  {
+   "idx": 844,
+   "template": "%PROGRAMDATA%\\\\gemini-cli\\\\settings.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 848,
+   "template": "~\\\\.expo\\\\state.json",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 851,
+   "template": "~\\\\.kaggle\\\\kaggle.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 856,
+   "template": "~\\\\\\\\.ssh\\\\\\\\*",
+   "category": "SSH / GPG / 密钥"
+  },
+  {
+   "idx": 858,
+   "template": "~\\\\Documents\\\\PowerShell\\\\profile.ps1",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 894,
+   "template": "%APPDATA%\\\\gcloud\\\\application_default_credentials.json",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 898,
+   "template": "~\\\\.snowsql\\\\config",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 924,
+   "template": "~\\\\.rediscli_history",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 931,
+   "template": "~\\\\.continuum\\\\anaconda-client\\\\tokens\\\\*.token",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 938,
+   "template": "%APPDATA%\\\\atlascli\\\\config.toml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 940,
+   "template": "~\\\\Documents\\\\.Rprofile",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 945,
+   "template": "~\\\\.mysql_history",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 949,
+   "template": "%LOCALAPPDATA%\\\\glab-cli\\\\config.yml",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 957,
+   "template": "%APPDATA%\\\\Microsoft\\\\UserSecrets\\\\*\\\\secrets.json",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 959,
+   "template": "~\\\\.runpod\\\\config.toml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 984,
+   "template": "~\\\\.qwen\\\\.env",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 985,
+   "template": "%LOCALAPPDATA%\\\\Google\\\\Chrome\\\\User Data",
+   "category": "浏览器"
+  },
+  {
+   "idx": 998,
+   "template": "~\\\\.aws\\\\credentials",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 1006,
+   "template": "~\\\\.jfrog\\\\jfrog-cli.conf.v6",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 1014,
+   "template": "~\\\\.databrickscfg",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 1017,
+   "template": "%APPDATA%\\\\Anthropic\\\\credentials\\\\*.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1030,
+   "template": "%PROGRAMFILES%\\\\Git\\\\etc\\\\gitconfig",
+   "category": "Git / VCS"
+  },
+  {
+   "idx": 1033,
+   "template": "%XDG_CONFIG_HOME%\\\\.semgrep\\\\settings.yml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1042,
+   "template": "~\\\\.git-credentials",
+   "category": "Git / VCS"
+  },
+  {
+   "idx": 1046,
+   "template": "~\\\\.local\\\\share\\\\fish\\\\fish_history",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 1068,
+   "template": "%XDG_CONFIG_HOME%\\\\stripe\\\\config.toml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1070,
+   "template": "~\\\\.psql_history",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 1077,
+   "template": "%USERPROFILE%\\\\.config\\\\neonctl\\\\credentials.json",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 1078,
+   "template": "~\\\\.rclone.conf",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1087,
+   "template": "~\\\\.gradle\\\\gradle.properties",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 1098,
+   "template": "~\\\\.config\\\\tea\\\\config.yml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1102,
+   "template": "%USERPROFILE%\\\\Programming",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1105,
+   "template": "~\\\\.codeium\\\\windsurf\\\\mcp_config.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1106,
+   "template": "~\\\\.tccli\\\\*.credential",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1107,
+   "template": "%APPDATA%\\\\postgresql\\\\psql_history",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 1110,
+   "template": "%APPDATA%\\\\dart\\\\pub-credentials.json",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 1117,
+   "template": "~\\\\.kimi\\\\mcp.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1131,
+   "template": "~\\\\.pulumi\\\\credentials.json",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 1135,
+   "template": "~\\\\.ncloud\\\\configure",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1140,
+   "template": "~\\\\.config\\\\configstore\\\\firebase-tools.json",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1144,
+   "template": "%APPDATA%\\\\s3cmd.ini",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1146,
+   "template": "~\\\\.bash_history",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 1151,
+   "template": "~\\\\.cache\\\\huggingface\\\\stored_tokens",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1168,
+   "template": "%USERPROFILE%\\\\.config\\\\stripe\\\\credentials.json",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1176,
+   "template": "~\\\\.sqlite_history",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 1180,
+   "template": "~\\\\.sbt\\\\sonatype_central_credentials",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1192,
+   "template": "%APPDATA%\\\\postgresql\\\\.pg_service.conf",
+   "category": "数据库 / 数据存储"
+  },
+  {
+   "idx": 1202,
+   "template": "~\\\\Documents\\\\.Renviron",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1208,
+   "template": "~\\\\.config\\\\gh\\\\hosts.yml",
+   "category": "Git / VCS"
+  },
+  {
+   "idx": 1226,
+   "template": "~\\\\.continue\\\\config.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1227,
+   "template": "%APPDATA%\\\\Code\\\\User\\\\profiles\\\\*\\\\mcp.json",
+   "category": "编辑器密钥存储"
+  },
+  {
+   "idx": 1228,
+   "template": "%APPDATA%\\\\FileZilla\\\\recentservers.xml",
+   "category": "SSH / GPG / 密钥"
+  },
+  {
+   "idx": 1230,
+   "template": "%APPDATA%\\\\FileZilla\\\\sitemanager.xml",
+   "category": "SSH / GPG / 密钥"
+  },
+  {
+   "idx": 1252,
+   "template": "%APPDATA%\\\\Buildkite CLI\\\\bk.yaml",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 1262,
+   "template": "%APPDATA%\\\\go\\\\env",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1292,
+   "template": "~\\\\.railway\\\\config.json",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 1311,
+   "template": "~\\\\.oci\\\\*",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 1316,
+   "template": "~\\\\.semgrep\\\\settings.yml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1317,
+   "template": "~\\\\.terraform.d\\\\credentials.tfrc.json",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 1330,
+   "template": "%APPDATA%\\\\Code\\\\User\\\\settings.json",
+   "category": "编辑器密钥存储"
+  },
+  {
+   "idx": 1337,
+   "template": "%APPDATA%\\\\doctl\\\\config.yaml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1344,
+   "template": "~\\\\.cargo\\\\credentials",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1347,
+   "template": "~\\\\.m2\\\\settings.xml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1361,
+   "template": "%LOCALAPPDATA%\\\\Microsoft\\\\Edge\\\\User Data",
+   "category": "浏览器"
+  },
+  {
+   "idx": 1362,
+   "template": "%APPDATA%\\\\Windsurf\\\\User\\\\globalStorage\\\\storage.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1364,
+   "template": "~\\\\.gem\\\\credentials",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 1388,
+   "template": "~\\\\Documents\\\\PowerShell\\\\Microsoft.PowerShell_profile.ps1",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 1404,
+   "template": "~\\\\.snowflake\\\\connections.toml",
+   "category": "数据库 / 数据存储"
+  },
+  {
+   "idx": 1416,
+   "template": "%APPDATA%\\\\hcloud\\\\cli.toml",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1420,
+   "template": "~\\\\.aws\\\\config",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 1421,
+   "template": "%USERPROFILE%\\\\code",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1432,
+   "template": "%USERPROFILE%\\\\dev",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1437,
+   "template": "~\\\\.gemini\\\\settings.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1452,
+   "template": "~\\\\Documents\\\\WindowsPowerShell\\\\profile.ps1",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 1464,
+   "template": "%APPDATA%\\\\postgresql\\\\pgpass.conf",
+   "category": "数据库 / 数据存储"
+  },
+  {
+   "idx": 1489,
+   "template": "%APPDATA%\\\\npm\\\\etc\\\\npmrc",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 1499,
+   "template": "~\\\\.bce\\\\config.json",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 1506,
+   "template": "%LOCALAPPDATA%\\\\BraveSoftware\\\\Brave-Browser\\\\User Data",
+   "category": "浏览器"
+  },
+  {
+   "idx": 1515,
+   "template": "~\\\\.aider.conf.yml",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1521,
+   "template": "~\\\\\\\\.cloudflared\\\\\\\\*",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 1522,
+   "template": "%APPDATA%\\\\pypoetry\\\\auth.toml",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 1528,
+   "template": "%APPDATA%\\\\Claude\\\\claude_desktop_config.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1534,
+   "template": "~\\\\.aliyun\\\\config.json",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 1539,
+   "template": "%APPDATA%\\\\age\\\\*",
+   "category": "SSH / GPG / 密钥"
+  },
+  {
+   "idx": 1544,
+   "template": "%APPDATA%\\\\Mozilla\\\\Firefox\\\\Profiles",
+   "category": "浏览器"
+  },
+  {
+   "idx": 1556,
+   "template": "%APPDATA%\\\\NuGet\\\\NuGet.Config",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 1575,
+   "template": "~\\\\.gemini\\\\oauth_creds.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1605,
+   "template": "~\\\\.volcengine\\\\config.json",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 1607,
+   "template": "~\\\\Documents\\\\WindowsPowerShell\\\\Microsoft.PowerShell_profile.ps1",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 1612,
+   "template": "~\\\\.kimi\\\\credentials\\\\*.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1628,
+   "template": "~\\\\.supabase\\\\access-token",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 1641,
+   "template": "~\\\\_netrc",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1642,
+   "template": "%APPDATA%\\\\Microsoft\\\\Windows\\\\PowerShell\\\\PSReadLine\\\\ConsoleHost_history.txt",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 1652,
+   "template": "~\\\\.node_repl_history",
+   "category": "Shell 历史"
+  },
+  {
+   "idx": 1682,
+   "template": "~\\\\.hcloud\\\\config.json",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1699,
+   "template": "~\\\\.jenkins\\\\secrets\\\\initialAdminPassword",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 1706,
+   "template": "%USERPROFILE%\\\\.local\\\\share\\\\opencode\\\\auth.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1713,
+   "template": "%APPDATA%\\\\Composer\\\\auth.json",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 1720,
+   "template": "~\\\\.gemini\\\\google_accounts.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1731,
+   "template": "%APPDATA%\\\\Windsurf\\\\User\\\\settings.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1733,
+   "template": "%APPDATA%\\\\nikke_launcher_hmt",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1736,
+   "template": "~\\\\.pg_service.conf",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1738,
+   "template": "~",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1740,
+   "template": "~\\\\.dbt\\\\profiles.yml",
+   "category": "数据库 / 数据存储"
+  },
+  {
+   "idx": 1741,
+   "template": "~\\\\.claude.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1742,
+   "template": "%APPDATA%\\\\Windsurf\\\\User\\\\globalStorage\\\\state.vscdb",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1744,
+   "template": "%USERPROFILE%\\\\Desktop",
+   "category": "其它开发工具"
+  },
+  {
+   "idx": 1746,
+   "template": "~\\\\.kimi\\\\config.toml",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1747,
+   "template": "~\\\\.config\\\\argocd\\\\config",
+   "category": "包仓库 / CI"
+  },
+  {
+   "idx": 1751,
+   "template": "~\\\\.Azure\\\\service_principal_entries.bin",
+   "category": "云 / DevOps"
+  },
+  {
+   "idx": 1762,
+   "template": "~\\\\.claude\\\\.credentials.json",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1777,
+   "template": "~\\\\.continue\\\\assistants\\\\*.yaml",
+   "category": "AI / LLM 工具"
+  },
+  {
+   "idx": 1778,
+   "template": "%APPDATA%\\\\Code\\\\User\\\\workspaceStorage\\\\*\\\\state.vscdb",
+   "category": "SSH / GPG / 密钥"
+  }
+ ],
+ "registry": [
+  {
+   "idx": 53,
+   "key": "Software\\\\SimonTatham\\\\PuTTY\\\\Sessions"
+  },
+  {
+   "idx": 338,
+   "key": "Software\\\\GNU\\\\GnuPG"
+  },
+  {
+   "idx": 537,
+   "key": "Software\\\\Classes\\\\CLSID\\\\{E77CC89B-7401-4C04-8CED-149DB35ADD04}\\\\InprocServer32"
+  },
+  {
+   "idx": 946,
+   "key": "Software\\\\Martin Prikryl\\\\WinSCP 2\\\\Sessions"
+  }
+ ],
+ "wallet_extensions": [
+  "nkbihfbeogaeaoehlefnkodbefgpgknn",
+  "bfnaelmomeimhlpmgjnjophhpkkoljpa",
+  "mcohilncbfahbmgdjkbpemcciiolgcge",
+  "hnfanknocfeofbddgcijnmhnfnkdnaad",
+  "egjidjbpglichdcondbcbdnbeeppgdph",
+  "acmacodkjbdgmoleebolmdjonilkdbch",
+  "dmkamcknogkgcdfhhbddcghachkejeap",
+  "onhogfjeacnfoofkfgppdlbmlmnplgbn",
+  "jnlgamecbpmbajjfhmmmlhejkemejdma",
+  "ibnejdfjmmkpcnlpebklmnkoeoihofec",
+  "aflkmfhebedbjioipglgcbcmnbpgliof",
+  "bhhhlbepdkbapadjdnnojkbgioiodbic",
+  "omaabbefbmiijedngplfjmnooppbclkk",
+  "pdliaogehgdbhbnmkklieghmmjkpigpa",
+  "jiidiaalihmmhddjgbnbgdfflelocpak",
+  "cadiboklkpojfamcoggejbbdjcoiljjk",
+  "fnjhmkhhmkbjkkabndcnnogagogbneec",
+  "opcgpfmipidbgpenhmajoajpbobppdil",
+  "jblndlipeogpafnldhgmapagcccfchpi",
+  "ppbibelpcjmhbdihakflkdcoccbgbkpo",
+  "aiifbnbfobpmeekipheeijimdpnlpgpp",
+  "idnnbdplmphpflfnlkomgpfbpcgelopg",
+  "mkpegjkblkkefacfnmkajcjmabijhclg",
+  "ejjladinnckdgjemekebdpeokbikhfci",
+  "opfgelmcmbiajamepnmloijbpoleiama",
+  "dlcobpjiigpikoobohmabehhmhfoodbb",
+  "phkbamefinggmakgklpkljjmgibohnba",
+  "gjagmgiddbbciopjhllkdnddhcglnemk"
+ ]
+}
