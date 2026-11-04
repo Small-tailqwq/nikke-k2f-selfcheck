@@ -3,3 +3,6 @@ report*.md
 __pycache__/
 K2F_selfcheck_*.html
 report*.html
+build/
+dist/
+*.spec

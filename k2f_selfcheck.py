@@ -29,6 +29,8 @@ k32.CreateFileW.argtypes = [wt.LPCWSTR, wt.DWORD, wt.DWORD, wt.LPVOID, wt.DWORD,
 k32.GetFileSizeEx.argtypes = [wt.HANDLE, ctypes.POINTER(ctypes.c_longlong)]
 k32.ReadFile.argtypes = [wt.HANDLE, wt.LPVOID, wt.DWORD, ctypes.POINTER(wt.DWORD), wt.LPVOID]
 k32.CloseHandle.argtypes = [wt.HANDLE]
+k32.GetConsoleProcessList.argtypes = [ctypes.POINTER(wt.DWORD), wt.DWORD]
+k32.GetConsoleProcessList.restype = wt.DWORD
 
 
 class LocalOnlyError(OSError):
@@ -313,6 +315,12 @@ def scan_browsers(wallet_ids, skip_counts=False, skip_wallets=False):
     return databases, wallets, coverage
 
 
+def owns_console():
+    """打包版双击运行时，控制台只挂着引导进程和本进程；此时退出前暂停，便于阅读输出。"""
+    buffer = (wt.DWORD * 4)()
+    return 0 < k32.GetConsoleProcessList(buffer, 4) <= (2 if getattr(sys, "frozen", False) else 1)
+
+
 def open_report(path):
     # 仅交给系统打开已写入的本地 HTML，不启动 HTTP 服务。
     os.startfile(local_path(path), "open")
@@ -381,4 +389,7 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    code = main()
+    if getattr(sys, "frozen", False) and owns_console():
+        input("\n  按回车键退出…")
+    sys.exit(code)
