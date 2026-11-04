@@ -10,6 +10,7 @@ import sqlite3
 import tempfile
 import unittest
 from unittest.mock import patch
+from html.parser import HTMLParser
 
 import k2f_selfcheck as scanner
 from k2f_report import render_report
@@ -159,19 +160,75 @@ class LocalReportTests(unittest.TestCase):
                               "databases": [{"status": "unreadable", "error": SECRET}]})
         self.assertNotIn(SECRET, html)
         self.assertNotIn("<script", html)
-        self.assertNotIn("<img", html)
+        self.assertNotIn('<img src="https://example.invalid">', html)
         self.assertIn("&lt;script&gt;", html)
         self.assertIn("未读取（已隐藏）", html)
         self.assertIn("default-src 'none'", html)
-        self.assertNotIn("<link", html)
+        self.assertNotIn('rel="stylesheet"', html)
         self.assertIn("不排查或担保真实泄露", html)
         self.assertIn("https://github.com/Sheisback/nikke_malware_scanner", html)
+
+    def test_html_resources_are_embedded_and_icon_matches_report_image(self):
+        class Resources(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.icons, self.images, self.disallowed = [], [], []
+            def handle_starttag(self, tag, attrs):
+                attrs = dict(attrs)
+                if tag == "img":
+                    self.images.append(attrs.get("src", ""))
+                elif tag == "link":
+                    if attrs.get("rel") != "icon":
+                        self.disallowed.append(tag)
+                    self.icons.append(attrs.get("href", ""))
+                elif tag in ("script", "iframe", "object", "embed", "form"):
+                    self.disallowed.append(tag)
+        parser = Resources()
+        html = render_report({})
+        parser.feed(html)
+        self.assertEqual(parser.disallowed, [])
+        self.assertEqual(len(parser.icons), 1)
+        self.assertEqual(parser.images, parser.icons)
+        self.assertTrue(parser.icons[0].startswith("data:image/jpeg;base64,"))
+        self.assertIn("img-src data:", html)
 
     def test_v10_warns_even_with_v20_and_plaintext(self):
         html = render_report({"databases": [{"browser": "Chrome", "profile": "配置 1", "store": "cookies", "status": "read",
                                              "counts": {"total": 3, "v10": 1, "v20": 1, "plain": 1}}]})
         for text in ("最高优先级 · v10 高风险", "v20 · 相对较低", "高风险 · 未加密 Cookie"):
             self.assertIn(text, html)
+
+    def test_password_details_strip_url_secrets_and_mask_account(self):
+        database = self.root / "Login Data"
+        make_database(database, "passwords")
+        connection = sqlite3.connect(database)
+        try:
+            connection.execute("UPDATE logins SET username_value = ?, origin_url = ?",
+                               ("alice@example.com", "https://user:" + SECRET + "@example.com/private/" + SECRET + "?token=" + SECRET + "#" + SECRET))
+            connection.commit()
+        finally:
+            connection.close()
+        result = scanner.browser_database(str(database), "passwords")
+        self.assertEqual(result["records"][0], {"index": 1, "encryption": "v10", "site": "example.com", "identifier": "a•••m"})
+        html = render_report({"databases": [dict(result, browser="Edge", profile="配置 1", store="passwords", database="Login Data")]})
+        self.assertIn("展开 1 条 v10 明细", html)
+        self.assertIn("example.com", html)
+        for hidden in (SECRET, "alice@example.com", "/private/", "?token=", "user:"):
+            self.assertNotIn(hidden, html)
+        self.assertIn("来源数据库", html)
+
+    def test_plain_cookie_details_do_not_embed_cookie_values_or_names(self):
+        database = self.root / "Cookies"
+        make_database(database, records=[(b"", SECRET, ".example.com", "session_id")])
+        result = scanner.browser_database(str(database), "cookies")
+        self.assertEqual(result["records"][0], {"index": 1, "encryption": "plain", "site": "example.com", "identifier": "s•••d"})
+        html = render_report({"databases": [dict(result, browser="Chrome", profile="配置 1", store="cookies", database=r"Network\Cookies")]})
+        self.assertIn("展开 1 条 未加密 Cookie 明细", html)
+        self.assertIn("example.com", html)
+        self.assertNotIn(SECRET, html)
+        self.assertNotIn("session_id", html)
+        self.assertEqual(scanner.masked_identifier("abcd"), "••••")
+        self.assertEqual(scanner.site_label(".example.com/" + SECRET, "cookies"), "站点未知")
 
     def test_skipped_counts_are_not_zero_or_safe(self):
         html = render_report({"skip_counts": True, "skip_wallets": True})

@@ -16,6 +16,7 @@ import stat
 import sys
 import winreg
 from datetime import datetime
+from urllib.parse import urlsplit
 
 from k2f_report import render_report
 
@@ -184,6 +185,38 @@ def read_shared(path):
         k32.CloseHandle(handle)
 
 
+def masked_identifier(value):
+    if not isinstance(value, str) or not value:
+        return "未填写"
+    if len(value) <= 4:
+        return "••••"
+    first = value[0] if value[0].isprintable() else "•"
+    last = value[-1] if value[-1].isprintable() else "•"
+    return first + "•••" + last
+
+
+def site_label(value, store):
+    if not isinstance(value, str):
+        return "站点未知"
+    try:
+        if store == "cookies":
+            value = value.lstrip(".")
+            if any(c in value for c in "/\\@?#"):
+                return "站点未知"
+            value = "https://" + value
+        parsed = urlsplit(value)
+        hostname = parsed.hostname
+        if parsed.scheme not in ("http", "https") or not hostname or len(hostname) > 253:
+            return "站点未知"
+        if hostname != "localhost" and "." not in hostname:
+            return "站点未知"
+        if not all(re.fullmatch(r"[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?", label) for label in hostname.split(".")):
+            return "站点未知"
+        return hostname
+    except ValueError:
+        return "站点未知"
+
+
 def browser_database(path, store):
     try:
         path = local_path(path)
@@ -201,21 +234,25 @@ def browser_database(path, store):
         try:
             connection.deserialize(raw)
             connection.execute("PRAGMA query_only=ON")
-            encrypted = "COALESCE(length(value), 0) = 0 AND " if store == "cookies" else ""
-            columns = ["COUNT(*)"]
-            for prefix in ("763130", "763230"):
-                columns.append(f"COALESCE(SUM({encrypted}substr(CAST({column} AS BLOB), 1, 3) = X'{prefix}'), 0)")
-            columns.extend([
-                f"COALESCE(SUM({encrypted}length({column}) > 0 AND substr(CAST({column} AS BLOB), 1, 3) NOT IN (X'763130', X'763230')), 0)",
-                f"COALESCE(SUM({encrypted}({column} IS NULL OR length({column}) = 0)), 0)",
-                "COALESCE(SUM(length(value) > 0), 0)" if store == "cookies" else "0",
-            ])
-            values = connection.execute("SELECT " + ", ".join(columns) + " FROM " + table).fetchone()
+            plain = "WHEN COALESCE(length(value), 0) > 0 THEN 'plain' " if store == "cookies" else ""
+            classification = (f"CASE {plain}WHEN {column} IS NULL OR length({column}) = 0 THEN 'empty' "
+                              f"WHEN substr(CAST({column} AS BLOB), 1, 3) = X'763130' THEN 'v10' "
+                              f"WHEN substr(CAST({column} AS BLOB), 1, 3) = X'763230' THEN 'v20' ELSE 'other' END")
+            source, identifier = ("origin_url", "username_value") if store == "passwords" else ("host_key", "name")
+            counts = dict.fromkeys(("total", "v10", "v20", "other", "empty", "plain"), 0)
+            records = []
+            # 查询只返回分类和定位元信息；密码、Cookie 值及完整密文不会进入结果对象。
+            for index, (kind, origin, name) in enumerate(connection.execute(
+                    f"SELECT {classification}, {source}, {identifier} FROM {table}"), 1):
+                counts["total"] += 1
+                counts[kind] += 1
+                records.append({"index": index, "encryption": kind, "site": site_label(origin, store),
+                                "identifier": masked_identifier(name)})
         finally:
             connection.close()
         changed = (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns)
         return {"status": "partial" if has_wal or wal_mode or changed else "read", "wal": has_wal or wal_mode,
-                "counts": dict(zip(("total", "v10", "v20", "other", "empty", "plain"), values))}
+                "counts": counts, "records": records}
     except FileNotFoundError:
         return {"status": "absent"}
     except LocalOnlyError:
