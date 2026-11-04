@@ -26,6 +26,8 @@ Requires Windows 10/11 and Python 3.11+. No dependencies to install.
 python k2f_selfcheck.py
 ```
 
+When running from source, reports default to the script directory. Relative `--out` paths use the working directory at launch; absolute paths use the specified location.
+
 | Option | Purpose |
 |---|---|
 | `--lang` | Report and output language: `zh`, `en`, `ja`, `ko`. Defaults to the Windows display language; other languages fall back to English |

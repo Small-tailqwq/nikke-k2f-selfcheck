@@ -570,6 +570,67 @@ class LocalReportTests(unittest.TestCase):
         with patch.object(scanner.ctypes, "WinDLL", return_value=api), patch.object(scanner.ctypes, "get_last_error", return_value=1168):
             self.assertEqual(scanner.credential_manager_count(), {"status": "absent"})
 
+    def test_ssh_drive_absolute_includes_with_both_slashes(self):
+        ssh = self.root / ".ssh"
+        ssh.mkdir()
+        external = self.root / "external"
+        external.mkdir()
+        private = external / "private-key"
+        private.write_text(SECRET)
+        include = external / "extra.conf"
+        include.write_text("Host server\n IdentityFile " + str(private) + "\n")
+        real_open = open
+        def config_only(path, *args, **kwargs):
+            self.assertNotEqual(Path(path), private)
+            return real_open(path, *args, **kwargs)
+        for value in (str(include), include.as_posix()):
+            with self.subTest(include=value):
+                (ssh / "config").write_text("Include " + value + "\n")
+                with patch.dict(os.environ, {"USERPROFILE": str(self.root)}), patch("builtins.open", side_effect=config_only):
+                    results = scanner.scan_ssh_references()
+                self.assertEqual([r["status"] for r in results], ["present"])
+                self.assertTrue(results[0]["template"].startswith("SSH IdentityFile"))
+                self.assertNotIn(SECRET, repr(results))
+                self.assertNotIn(str(private), repr(results))
+
+    def test_ssh_network_include_is_rejected_before_access(self):
+        ssh = self.root / ".ssh"
+        ssh.mkdir()
+        (ssh / "config").write_text("Include \\\\example.invalid\\share\\extra.conf\n")
+        real_lstat = os.lstat
+        def local_stat(path, *args, **kwargs):
+            self.assertFalse(str(path).startswith("\\\\"))
+            return real_lstat(path, *args, **kwargs)
+        with patch.dict(os.environ, {"USERPROFILE": str(self.root)}), patch.object(scanner.os, "lstat", side_effect=local_stat):
+            results = scanner.scan_ssh_references()
+        self.assertEqual([r["status"] for r in results], ["unreadable"])
+
+    def test_report_destination_uses_program_directory_or_explicit_out(self):
+        targets = self.root / "targets.json"
+        targets.write_text('{"paths": []}')
+        for frozen in (True, False):
+            for mode in ("default", "relative", "absolute"):
+                with self.subTest(frozen=frozen, mode=mode):
+                    root = self.root / (str(frozen) + "-" + mode)
+                    app, source, cwd = root / "app", root / "source", root / "cwd"
+                    for directory in (app, source, cwd):
+                        directory.mkdir(parents=True)
+                    args = ["--targets", str(targets), "--quick", "--no-open"]
+                    expected = app if frozen else source
+                    if mode != "default":
+                        expected = cwd if mode == "relative" else root
+                        args += ["--out", "report.html" if mode == "relative" else str(root / "report.html")]
+                    with patch.object(scanner.sys, "frozen", frozen, create=True), \
+                            patch.object(scanner.sys, "executable", str(app / "k2f-selfcheck.exe")), \
+                            patch.object(scanner, "__file__", str(source / "k2f_selfcheck.py")), \
+                            patch.object(scanner, "ensure_environment"), \
+                            patch.object(scanner, "scan_browsers", return_value=([], [], [])), \
+                            contextlib.chdir(cwd), contextlib.redirect_stdout(io.StringIO()):
+                        self.assertEqual(scanner.main(args), 0)
+                    reports = list(root.rglob("*.html"))
+                    self.assertEqual(len(reports), 1)
+                    self.assertEqual(reports[0].parent, expected)
+
     def test_sessions_report_key_presence_without_password_or_session_name(self):
         key_file = self.root / "private.ppk"
         key_file.write_text(SECRET)
