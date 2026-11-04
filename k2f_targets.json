@@ -9,1140 +9,1599 @@
   {
    "idx": 1,
    "template": "~\\\\.fly\\\\config.yml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 6,
    "template": "%USERPROFILE%\\\\.config\\\\stripe\\\\config.toml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 7,
    "template": "~\\\\.zsh_history",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 11,
    "template": "%TEMP%\\\\k2f-bcreds-",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "程序与辅助文件",
+   "kind": "program",
+   "scope": "excluded"
   },
   {
    "idx": 23,
    "template": "~\\\\.circleci\\\\cli.yml",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 30,
    "template": "%LOCALAPPDATA%\\\\snowflake\\\\config.toml",
-   "category": "数据库 / 数据存储"
+   "category": "数据库 / 数据存储",
+   "report_category": "数据库与数据存储",
+   "kind": "config"
   },
   {
    "idx": 43,
    "template": "~\\\\.dsh\\\\.credentials.yaml",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential"
   },
   {
    "idx": 66,
    "template": "%USERPROFILE%\\\\source",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "普通目录",
+   "kind": "general"
   },
   {
    "idx": 69,
    "template": "~\\\\.config\\\\git\\\\credentials",
-   "category": "Git / VCS"
+   "category": "Git / VCS",
+   "report_category": "Git 与代码托管",
+   "kind": "credential"
   },
   {
    "idx": 78,
    "template": "~\\\\.config\\\\tc\\\\config.yml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 113,
    "template": "~\\\\.gitconfig",
-   "category": "Git / VCS"
+   "category": "Git / VCS",
+   "report_category": "Git 与代码托管",
+   "kind": "config"
   },
   {
    "idx": 136,
    "template": "%USERPROFILE%\\\\.config\\\\containers\\\\auth.json",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "credential"
   },
   {
    "idx": 139,
    "template": "%USERPROFILE%\\\\Documents",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "普通目录",
+   "kind": "general"
   },
   {
    "idx": 151,
    "template": "%APPDATA%\\\\Cursor\\\\User\\\\globalStorage\\\\**\\\\*.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 154,
    "template": "%PROGRAMDATA%\\\\pip\\\\pip.ini",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 158,
    "template": "~\\\\.oci\\\\config",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config"
   },
   {
    "idx": 161,
    "template": "%APPDATA%\\\\Windsurf\\\\User\\\\globalStorage\\\\**\\\\*.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 173,
    "template": "~\\\\.oraclebmc\\\\config",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config"
   },
   {
    "idx": 175,
    "template": "%APPDATA%\\\\gcloud\\\\access_tokens.db",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential"
   },
   {
    "idx": 183,
    "template": "C:\\\\GitLab-Runner\\\\config.toml",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 189,
    "template": "C:\\\\buildkite-agent\\\\buildkite-agent.cfg",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 192,
    "template": "~\\\\.yarnrc",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 197,
    "template": "~\\\\mc\\\\config.json",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 198,
    "template": "%LOCALAPPDATA%\\\\Vivaldi\\\\User Data",
-   "category": "浏览器"
+   "category": "浏览器",
+   "report_category": "浏览器",
+   "kind": "browser"
   },
   {
    "idx": 199,
    "template": "%USERPROFILE%\\\\.config\\\\.wrangler\\\\config\\\\default.toml",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config"
   },
   {
    "idx": 201,
    "template": "~\\\\.codex\\\\auth.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential"
   },
   {
    "idx": 207,
    "template": "~\\\\.cursor\\\\mcp.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 218,
    "template": "~\\\\.qwen\\\\settings.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 228,
    "template": "%LOCALAPPDATA%\\\\Google\\\\Chrome\\\\User Data\\\\PlatformExperienceHelper",
-   "category": "浏览器"
+   "category": "浏览器",
+   "report_category": "程序与辅助文件",
+   "kind": "program",
+   "scope": "excluded"
   },
   {
    "idx": 249,
    "template": "%LOCALAPPDATA%\\\\ContinuumIO\\\\binstar\\\\*.token",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "credential"
   },
   {
    "idx": 250,
    "template": "%APPDATA%\\\\Code\\\\User\\\\globalStorage\\\\**\\\\*.json",
-   "category": "SSH / GPG / 密钥"
+   "category": "SSH / GPG / 密钥",
+   "report_category": "编辑器与插件",
+   "kind": "config"
   },
   {
    "idx": 252,
    "template": "%APPDATA%\\\\rclone\\\\rclone.conf",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 258,
    "template": "~\\\\.argocd\\\\config",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 263,
    "template": "~\\\\.kaggle\\\\access_token",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential"
   },
   {
    "idx": 286,
    "template": "~\\\\.config\\\\glab-cli\\\\config.yml",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 288,
    "template": "~\\\\.s3cfg",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 305,
    "template": "~\\\\.claude\\\\settings.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 315,
    "template": "%APPDATA%\\\\Cursor\\\\User\\\\globalStorage\\\\state.vscdb",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 318,
    "template": "~\\\\.config\\\\circleci\\\\config.yml",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 330,
    "template": "%APPDATA%\\\\xdg.data\\\\com.vercel.cli\\\\auth.json",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential"
   },
   {
    "idx": 332,
    "template": "%APPDATA%\\\\terraform.rc",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 339,
    "template": "~\\\\.anyscale\\\\credentials.json",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "credential"
   },
   {
    "idx": 345,
    "template": "~\\\\.continue\\\\config.yaml",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 346,
    "template": "%APPDATA%\\\\Code - Insiders\\\\User\\\\globalStorage\\\\state.vscdb",
-   "category": "SSH / GPG / 密钥"
+   "category": "SSH / GPG / 密钥",
+   "report_category": "编辑器与插件",
+   "kind": "config"
   },
   {
    "idx": 347,
    "template": "~\\\\.keys\\\\*",
-   "category": "SSH / GPG / 密钥"
+   "category": "SSH / GPG / 密钥",
+   "report_category": "SSH、GPG 与密钥",
+   "kind": "key_material"
   },
   {
    "idx": 351,
    "template": "%APPDATA%\\\\Opera Software\\\\Opera Stable",
-   "category": "浏览器"
+   "category": "浏览器",
+   "report_category": "浏览器",
+   "kind": "browser"
   },
   {
    "idx": 354,
    "template": "~\\\\.b2_account_info",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 369,
    "template": "%APPDATA%\\\\netlify\\\\Config\\\\config.json",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config"
   },
   {
    "idx": 390,
    "template": "~\\\\.dogrc",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 392,
    "template": "%APPDATA%\\\\gcloud\\\\credentials.db",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential"
   },
   {
    "idx": 395,
    "template": "~\\\\.yarnrc.yml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 401,
    "template": "%ProgramW6432%\\\\Google\\\\Chrome\\\\Application",
-   "category": "浏览器"
+   "category": "浏览器",
+   "report_category": "程序与辅助文件",
+   "kind": "program"
   },
   {
    "idx": 403,
    "template": "~\\\\.npmrc",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 411,
    "template": "C:\\\\Program Files\\\\Jenkins\\\\secrets\\\\initialAdminPassword",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "credential"
   },
   {
    "idx": 417,
    "template": "~\\\\.ssh\\\\config",
-   "category": "SSH / GPG / 密钥"
+   "category": "SSH / GPG / 密钥",
+   "report_category": "SSH、GPG 与密钥",
+   "kind": "config"
   },
   {
    "idx": 421,
    "template": "~\\\\.config\\\\age\\\\*",
-   "category": "SSH / GPG / 密钥"
+   "category": "SSH / GPG / 密钥",
+   "report_category": "SSH、GPG 与密钥",
+   "kind": "key_material"
   },
   {
    "idx": 426,
    "template": "%LOCALAPPDATA%\\\\snowflake\\\\connections.toml",
-   "category": "数据库 / 数据存储"
+   "category": "数据库 / 数据存储",
+   "report_category": "数据库与数据存储",
+   "kind": "config"
   },
   {
    "idx": 433,
    "template": "~\\\\.Azure\\\\accessTokens.json",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential"
   },
   {
    "idx": 436,
    "template": "~\\\\.cache\\\\huggingface\\\\token",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential"
   },
   {
    "idx": 438,
    "template": "%ProgramFiles%\\\\Google\\\\Chrome\\\\Application",
-   "category": "浏览器"
+   "category": "浏览器",
+   "report_category": "程序与辅助文件",
+   "kind": "program"
   },
   {
    "idx": 445,
    "template": "%APPDATA%\\\\GitHub CLI\\\\hosts.yml",
-   "category": "Git / VCS"
+   "category": "Git / VCS",
+   "report_category": "Git 与代码托管",
+   "kind": "config"
   },
   {
    "idx": 446,
    "template": "~\\\\.vault-token",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "credential"
   },
   {
    "idx": 455,
    "template": "C:\\\\config.toml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 480,
    "template": "~\\\\.aws\\\\sso\\\\cache\\\\*.json",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential"
   },
   {
    "idx": 488,
    "template": "~\\\\.cloudsmith\\\\credentials.ini",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "credential"
   },
   {
    "idx": 489,
    "template": "%APPDATA%\\\\gnupg",
-   "category": "SSH / GPG / 密钥"
+   "category": "SSH / GPG / 密钥",
+   "report_category": "SSH、GPG 与密钥",
+   "kind": "key_material"
   },
   {
    "idx": 497,
    "template": "~\\\\.copilot\\\\mcp-config.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 504,
    "template": "~\\\\.snowflake\\\\config.toml",
-   "category": "数据库 / 数据存储"
+   "category": "数据库 / 数据存储",
+   "report_category": "数据库与数据存储",
+   "kind": "config"
   },
   {
    "idx": 510,
    "template": "~\\\\.config\\\\linode-cli",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config"
   },
   {
    "idx": 512,
    "template": "~\\\\.codex\\\\config.toml",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 532,
    "template": "~\\\\.modal.toml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 539,
    "template": "%APPDATA%\\\\Cursor\\\\User\\\\settings.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 542,
    "template": "%APPDATA%\\\\Code\\\\User\\\\globalStorage\\\\state.vscdb",
-   "category": "SSH / GPG / 密钥"
+   "category": "SSH / GPG / 密钥",
+   "report_category": "编辑器与插件",
+   "kind": "config"
   },
   {
    "idx": 547,
    "template": "~\\\\.docker\\\\config.json",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 566,
    "template": "~\\\\.jfrog\\\\jfrog-cli.conf",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 572,
    "template": "%PROGRAMDATA%\\\\Git\\\\config",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 575,
    "template": "%APPDATA%\\\\dart\\\\pub-tokens.json",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "credential"
   },
   {
    "idx": 584,
    "template": "%APPDATA%\\\\pip\\\\pip.ini",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 587,
    "template": "~\\\\.config\\\\planetscale\\\\access-token",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "credential"
   },
   {
    "idx": 596,
    "template": "%APPDATA%\\\\helm\\\\repositories.yaml",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 600,
    "template": "%LOCALAPPDATA%\\\\ngrok\\\\ngrok.yml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 607,
    "template": "%USERPROFILE%\\\\.config\\\\configstore\\\\snyk.json",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 611,
    "template": "~\\\\.config\\\\git\\\\config",
-   "category": "Git / VCS"
+   "category": "Git / VCS",
+   "report_category": "Git 与代码托管",
+   "kind": "config"
   },
   {
    "idx": 619,
    "template": "~\\\\.python_history",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 625,
    "template": "~\\\\.twilio-cli\\\\config.json",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 633,
    "template": "%APPDATA%\\\\Code\\\\User\\\\mcp.json",
-   "category": "编辑器密钥存储"
+   "category": "编辑器密钥存储",
+   "report_category": "编辑器与插件",
+   "kind": "config"
   },
   {
    "idx": 648,
    "template": "~\\\\pip\\\\pip.ini",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 650,
    "template": "%APPDATA%\\\\cloudsmith\\\\credentials.ini",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "credential"
   },
   {
    "idx": 667,
    "template": "%APPDATA%\\\\fish\\\\fish_history",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 691,
    "template": "~\\\\.sentryclirc",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 694,
    "template": "~\\\\.kube\\\\config",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 702,
    "template": "%APPDATA%\\\\octopus\\\\cli_config.json",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 708,
    "template": "%APPDATA%\\\\Code - Insiders\\\\User\\\\settings.json",
-   "category": "编辑器密钥存储"
+   "category": "编辑器密钥存储",
+   "report_category": "编辑器与插件",
+   "kind": "config"
   },
   {
    "idx": 709,
    "template": "~\\\\.Azure\\\\msal_token_cache.bin",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential"
   },
   {
    "idx": 710,
    "template": "%USERPROFILE%",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "普通目录",
+   "kind": "general"
   },
   {
    "idx": 713,
    "template": "~\\\\.terraformrc",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 717,
    "template": "~\\\\.usacloud\\\\*\\\\config.json",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 732,
    "template": "%LOCALAPPDATA%\\\\Google\\\\Chrome\\\\Application",
-   "category": "浏览器"
+   "category": "浏览器",
+   "report_category": "程序与辅助文件",
+   "kind": "program"
   },
   {
    "idx": 766,
    "template": "~\\\\.certs\\\\*",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 776,
    "template": "~\\\\.netrc",
-   "category": "Git / VCS"
+   "category": "Git / VCS",
+   "report_category": "Git 与代码托管",
+   "kind": "credential"
   },
   {
    "idx": 782,
    "template": "~\\\\.cargo\\\\credentials.toml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "credential"
   },
   {
    "idx": 786,
    "template": "%APPDATA%\\\\terraform.d\\\\credentials.tfrc.json",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "credential"
   },
   {
    "idx": 795,
    "template": "~\\\\.pypirc",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 803,
    "template": "%APPDATA%\\\\Code\\\\User\\\\profiles\\\\*\\\\settings.json",
-   "category": "编辑器密钥存储"
+   "category": "编辑器密钥存储",
+   "report_category": "编辑器与插件",
+   "kind": "config"
   },
   {
    "idx": 804,
    "template": "~\\\\.aws\\\\sso\\\\cache\\\\kiro-auth-token.json",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential"
   },
   {
    "idx": 813,
    "template": "~\\\\.sbt\\\\.credentials",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "credential"
   },
   {
    "idx": 822,
    "template": "~\\\\.aws\\\\cli\\\\cache\\\\*.json",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config"
   },
   {
    "idx": 823,
    "template": "%APPDATA%\\\\.wrangler\\\\config\\\\default.toml",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config"
   },
   {
    "idx": 829,
    "template": "%APPDATA%\\\\nikke_launcher",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "程序与辅助文件",
+   "kind": "program"
   },
   {
    "idx": 831,
    "template": "~\\\\.ssh\\\\",
-   "category": "SSH / GPG / 密钥"
+   "category": "SSH / GPG / 密钥",
+   "report_category": "SSH、GPG 与密钥",
+   "kind": "key_material"
   },
   {
    "idx": 841,
    "template": "C:\\\\Windows\\\\System32\\\\winsqlite3.dll",
-   "category": "数据库 / 数据存储"
+   "category": "数据库 / 数据存储",
+   "report_category": "程序与辅助文件",
+   "kind": "program"
   },
   {
    "idx": 844,
    "template": "%PROGRAMDATA%\\\\gemini-cli\\\\settings.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 848,
    "template": "~\\\\.expo\\\\state.json",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 851,
    "template": "~\\\\.kaggle\\\\kaggle.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential"
   },
   {
    "idx": 856,
    "template": "~\\\\\\\\.ssh\\\\\\\\*",
-   "category": "SSH / GPG / 密钥"
+   "category": "SSH / GPG / 密钥",
+   "report_category": "SSH、GPG 与密钥",
+   "kind": "key_material"
   },
   {
    "idx": 858,
    "template": "~\\\\Documents\\\\PowerShell\\\\profile.ps1",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 894,
    "template": "%APPDATA%\\\\gcloud\\\\application_default_credentials.json",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential"
   },
   {
    "idx": 898,
    "template": "~\\\\.snowsql\\\\config",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 924,
    "template": "~\\\\.rediscli_history",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 931,
    "template": "~\\\\.continuum\\\\anaconda-client\\\\tokens\\\\*.token",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "credential"
   },
   {
    "idx": 938,
    "template": "%APPDATA%\\\\atlascli\\\\config.toml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 940,
    "template": "~\\\\Documents\\\\.Rprofile",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 945,
    "template": "~\\\\.mysql_history",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 949,
    "template": "%LOCALAPPDATA%\\\\glab-cli\\\\config.yml",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 957,
    "template": "%APPDATA%\\\\Microsoft\\\\UserSecrets\\\\*\\\\secrets.json",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "credential"
   },
   {
    "idx": 959,
    "template": "~\\\\.runpod\\\\config.toml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 984,
    "template": "~\\\\.qwen\\\\.env",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential"
   },
   {
    "idx": 985,
    "template": "%LOCALAPPDATA%\\\\Google\\\\Chrome\\\\User Data",
-   "category": "浏览器"
+   "category": "浏览器",
+   "report_category": "浏览器",
+   "kind": "browser"
   },
   {
    "idx": 998,
    "template": "~\\\\.aws\\\\credentials",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential"
   },
   {
    "idx": 1006,
    "template": "~\\\\.jfrog\\\\jfrog-cli.conf.v6",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 1014,
    "template": "~\\\\.databrickscfg",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 1017,
    "template": "%APPDATA%\\\\Anthropic\\\\credentials\\\\*.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential"
   },
   {
    "idx": 1030,
    "template": "%PROGRAMFILES%\\\\Git\\\\etc\\\\gitconfig",
-   "category": "Git / VCS"
+   "category": "Git / VCS",
+   "report_category": "Git 与代码托管",
+   "kind": "config"
   },
   {
    "idx": 1033,
    "template": "%XDG_CONFIG_HOME%\\\\.semgrep\\\\settings.yml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 1042,
    "template": "~\\\\.git-credentials",
-   "category": "Git / VCS"
+   "category": "Git / VCS",
+   "report_category": "Git 与代码托管",
+   "kind": "credential"
   },
   {
    "idx": 1046,
    "template": "~\\\\.local\\\\share\\\\fish\\\\fish_history",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 1068,
    "template": "%XDG_CONFIG_HOME%\\\\stripe\\\\config.toml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 1070,
    "template": "~\\\\.psql_history",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 1077,
    "template": "%USERPROFILE%\\\\.config\\\\neonctl\\\\credentials.json",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential"
   },
   {
    "idx": 1078,
    "template": "~\\\\.rclone.conf",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 1087,
    "template": "~\\\\.gradle\\\\gradle.properties",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 1098,
    "template": "~\\\\.config\\\\tea\\\\config.yml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 1102,
    "template": "%USERPROFILE%\\\\Programming",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "普通目录",
+   "kind": "general"
   },
   {
    "idx": 1105,
    "template": "~\\\\.codeium\\\\windsurf\\\\mcp_config.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 1106,
    "template": "~\\\\.tccli\\\\*.credential",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "credential"
   },
   {
    "idx": 1107,
    "template": "%APPDATA%\\\\postgresql\\\\psql_history",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 1110,
    "template": "%APPDATA%\\\\dart\\\\pub-credentials.json",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "credential"
   },
   {
    "idx": 1117,
    "template": "~\\\\.kimi\\\\mcp.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 1131,
    "template": "~\\\\.pulumi\\\\credentials.json",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "credential"
   },
   {
    "idx": 1135,
    "template": "~\\\\.ncloud\\\\configure",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 1140,
    "template": "~\\\\.config\\\\configstore\\\\firebase-tools.json",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 1144,
    "template": "%APPDATA%\\\\s3cmd.ini",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 1146,
    "template": "~\\\\.bash_history",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 1151,
    "template": "~\\\\.cache\\\\huggingface\\\\stored_tokens",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential"
   },
   {
    "idx": 1168,
    "template": "%USERPROFILE%\\\\.config\\\\stripe\\\\credentials.json",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "credential"
   },
   {
    "idx": 1176,
    "template": "~\\\\.sqlite_history",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 1180,
    "template": "~\\\\.sbt\\\\sonatype_central_credentials",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "credential"
   },
   {
    "idx": 1192,
    "template": "%APPDATA%\\\\postgresql\\\\.pg_service.conf",
-   "category": "数据库 / 数据存储"
+   "category": "数据库 / 数据存储",
+   "report_category": "数据库与数据存储",
+   "kind": "config"
   },
   {
    "idx": 1202,
    "template": "~\\\\Documents\\\\.Renviron",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 1208,
    "template": "~\\\\.config\\\\gh\\\\hosts.yml",
-   "category": "Git / VCS"
+   "category": "Git / VCS",
+   "report_category": "Git 与代码托管",
+   "kind": "config"
   },
   {
    "idx": 1226,
    "template": "~\\\\.continue\\\\config.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 1227,
    "template": "%APPDATA%\\\\Code\\\\User\\\\profiles\\\\*\\\\mcp.json",
-   "category": "编辑器密钥存储"
+   "category": "编辑器密钥存储",
+   "report_category": "编辑器与插件",
+   "kind": "config"
   },
   {
    "idx": 1228,
    "template": "%APPDATA%\\\\FileZilla\\\\recentservers.xml",
-   "category": "SSH / GPG / 密钥"
+   "category": "SSH / GPG / 密钥",
+   "report_category": "SSH、GPG 与密钥",
+   "kind": "config"
   },
   {
    "idx": 1230,
    "template": "%APPDATA%\\\\FileZilla\\\\sitemanager.xml",
-   "category": "SSH / GPG / 密钥"
+   "category": "SSH / GPG / 密钥",
+   "report_category": "SSH、GPG 与密钥",
+   "kind": "config"
   },
   {
    "idx": 1252,
    "template": "%APPDATA%\\\\Buildkite CLI\\\\bk.yaml",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 1262,
    "template": "%APPDATA%\\\\go\\\\env",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 1292,
    "template": "~\\\\.railway\\\\config.json",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config"
   },
   {
    "idx": 1311,
    "template": "~\\\\.oci\\\\*",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config"
   },
   {
    "idx": 1316,
    "template": "~\\\\.semgrep\\\\settings.yml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 1317,
    "template": "~\\\\.terraform.d\\\\credentials.tfrc.json",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "credential"
   },
   {
    "idx": 1330,
    "template": "%APPDATA%\\\\Code\\\\User\\\\settings.json",
-   "category": "编辑器密钥存储"
+   "category": "编辑器密钥存储",
+   "report_category": "编辑器与插件",
+   "kind": "config"
   },
   {
    "idx": 1337,
    "template": "%APPDATA%\\\\doctl\\\\config.yaml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 1344,
    "template": "~\\\\.cargo\\\\credentials",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "credential"
   },
   {
    "idx": 1347,
    "template": "~\\\\.m2\\\\settings.xml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 1361,
    "template": "%LOCALAPPDATA%\\\\Microsoft\\\\Edge\\\\User Data",
-   "category": "浏览器"
+   "category": "浏览器",
+   "report_category": "浏览器",
+   "kind": "browser"
   },
   {
    "idx": 1362,
    "template": "%APPDATA%\\\\Windsurf\\\\User\\\\globalStorage\\\\storage.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 1364,
    "template": "~\\\\.gem\\\\credentials",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "credential"
   },
   {
    "idx": 1388,
    "template": "~\\\\Documents\\\\PowerShell\\\\Microsoft.PowerShell_profile.ps1",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 1404,
    "template": "~\\\\.snowflake\\\\connections.toml",
-   "category": "数据库 / 数据存储"
+   "category": "数据库 / 数据存储",
+   "report_category": "数据库与数据存储",
+   "kind": "config"
   },
   {
    "idx": 1416,
    "template": "%APPDATA%\\\\hcloud\\\\cli.toml",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 1420,
    "template": "~\\\\.aws\\\\config",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config"
   },
   {
    "idx": 1421,
    "template": "%USERPROFILE%\\\\code",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "普通目录",
+   "kind": "general"
   },
   {
    "idx": 1432,
    "template": "%USERPROFILE%\\\\dev",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "普通目录",
+   "kind": "general"
   },
   {
    "idx": 1437,
    "template": "~\\\\.gemini\\\\settings.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 1452,
    "template": "~\\\\Documents\\\\WindowsPowerShell\\\\profile.ps1",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 1464,
    "template": "%APPDATA%\\\\postgresql\\\\pgpass.conf",
-   "category": "数据库 / 数据存储"
+   "category": "数据库 / 数据存储",
+   "report_category": "数据库与数据存储",
+   "kind": "credential"
   },
   {
    "idx": 1489,
    "template": "%APPDATA%\\\\npm\\\\etc\\\\npmrc",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 1499,
    "template": "~\\\\.bce\\\\config.json",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config"
   },
   {
    "idx": 1506,
    "template": "%LOCALAPPDATA%\\\\BraveSoftware\\\\Brave-Browser\\\\User Data",
-   "category": "浏览器"
+   "category": "浏览器",
+   "report_category": "浏览器",
+   "kind": "browser"
   },
   {
    "idx": 1515,
    "template": "~\\\\.aider.conf.yml",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 1521,
    "template": "~\\\\\\\\.cloudflared\\\\\\\\*",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config"
   },
   {
    "idx": 1522,
    "template": "%APPDATA%\\\\pypoetry\\\\auth.toml",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "credential"
   },
   {
    "idx": 1528,
    "template": "%APPDATA%\\\\Claude\\\\claude_desktop_config.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 1534,
    "template": "~\\\\.aliyun\\\\config.json",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config"
   },
   {
    "idx": 1539,
    "template": "%APPDATA%\\\\age\\\\*",
-   "category": "SSH / GPG / 密钥"
+   "category": "SSH / GPG / 密钥",
+   "report_category": "SSH、GPG 与密钥",
+   "kind": "key_material"
   },
   {
    "idx": 1544,
    "template": "%APPDATA%\\\\Mozilla\\\\Firefox\\\\Profiles",
-   "category": "浏览器"
+   "category": "浏览器",
+   "report_category": "浏览器",
+   "kind": "browser"
   },
   {
    "idx": 1556,
    "template": "%APPDATA%\\\\NuGet\\\\NuGet.Config",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 1575,
    "template": "~\\\\.gemini\\\\oauth_creds.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential"
   },
   {
    "idx": 1605,
    "template": "~\\\\.volcengine\\\\config.json",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "config"
   },
   {
    "idx": 1607,
    "template": "~\\\\Documents\\\\WindowsPowerShell\\\\Microsoft.PowerShell_profile.ps1",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 1612,
    "template": "~\\\\.kimi\\\\credentials\\\\*.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential"
   },
   {
    "idx": 1628,
    "template": "~\\\\.supabase\\\\access-token",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential"
   },
   {
    "idx": 1641,
    "template": "~\\\\_netrc",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "credential"
   },
   {
    "idx": 1642,
    "template": "%APPDATA%\\\\Microsoft\\\\Windows\\\\PowerShell\\\\PSReadLine\\\\ConsoleHost_history.txt",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 1652,
    "template": "~\\\\.node_repl_history",
-   "category": "Shell 历史"
+   "category": "Shell 历史",
+   "report_category": "Shell 历史与配置",
+   "kind": "config"
   },
   {
    "idx": 1682,
    "template": "~\\\\.hcloud\\\\config.json",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 1699,
    "template": "~\\\\.jenkins\\\\secrets\\\\initialAdminPassword",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "credential"
   },
   {
    "idx": 1706,
    "template": "%USERPROFILE%\\\\.local\\\\share\\\\opencode\\\\auth.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential"
   },
   {
    "idx": 1713,
    "template": "%APPDATA%\\\\Composer\\\\auth.json",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "credential"
   },
   {
    "idx": 1720,
    "template": "~\\\\.gemini\\\\google_accounts.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 1731,
    "template": "%APPDATA%\\\\Windsurf\\\\User\\\\settings.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 1733,
    "template": "%APPDATA%\\\\nikke_launcher_hmt",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "程序与辅助文件",
+   "kind": "program"
   },
   {
    "idx": 1736,
    "template": "~\\\\.pg_service.conf",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "其他开发工具",
+   "kind": "config"
   },
   {
    "idx": 1738,
    "template": "~",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "普通目录",
+   "kind": "general"
   },
   {
    "idx": 1740,
    "template": "~\\\\.dbt\\\\profiles.yml",
-   "category": "数据库 / 数据存储"
+   "category": "数据库 / 数据存储",
+   "report_category": "数据库与数据存储",
+   "kind": "config"
   },
   {
    "idx": 1741,
    "template": "~\\\\.claude.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 1742,
    "template": "%APPDATA%\\\\Windsurf\\\\User\\\\globalStorage\\\\state.vscdb",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 1744,
    "template": "%USERPROFILE%\\\\Desktop",
-   "category": "其它开发工具"
+   "category": "其它开发工具",
+   "report_category": "普通目录",
+   "kind": "general"
   },
   {
    "idx": 1746,
    "template": "~\\\\.kimi\\\\config.toml",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 1747,
    "template": "~\\\\.config\\\\argocd\\\\config",
-   "category": "包仓库 / CI"
+   "category": "包仓库 / CI",
+   "report_category": "软件包与 CI",
+   "kind": "config"
   },
   {
    "idx": 1751,
    "template": "~\\\\.Azure\\\\service_principal_entries.bin",
-   "category": "云 / DevOps"
+   "category": "云 / DevOps",
+   "report_category": "云服务与运维",
+   "kind": "credential"
   },
   {
    "idx": 1762,
    "template": "~\\\\.claude\\\\.credentials.json",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "credential"
   },
   {
    "idx": 1777,
    "template": "~\\\\.continue\\\\assistants\\\\*.yaml",
-   "category": "AI / LLM 工具"
+   "category": "AI / LLM 工具",
+   "report_category": "AI 工具",
+   "kind": "config"
   },
   {
    "idx": 1778,
    "template": "%APPDATA%\\\\Code\\\\User\\\\workspaceStorage\\\\*\\\\state.vscdb",
-   "category": "SSH / GPG / 密钥"
+   "category": "SSH / GPG / 密钥",
+   "report_category": "编辑器与插件",
+   "kind": "config"
   }
  ],
  "registry": [
   {
    "idx": 53,
-   "key": "Software\\\\SimonTatham\\\\PuTTY\\\\Sessions"
+   "key": "Software\\\\SimonTatham\\\\PuTTY\\\\Sessions",
+   "report_category": "SSH、GPG 与密钥",
+   "kind": "config"
   },
   {
    "idx": 338,
-   "key": "Software\\\\GNU\\\\GnuPG"
+   "key": "Software\\\\GNU\\\\GnuPG",
+   "report_category": "SSH、GPG 与密钥",
+   "kind": "config"
   },
   {
    "idx": 537,
-   "key": "Software\\\\Classes\\\\CLSID\\\\{E77CC89B-7401-4C04-8CED-149DB35ADD04}\\\\InprocServer32"
+   "key": "Software\\\\Classes\\\\CLSID\\\\{E77CC89B-7401-4C04-8CED-149DB35ADD04}\\\\InprocServer32",
+   "report_category": "程序与辅助文件",
+   "kind": "program",
+   "scope": "excluded"
   },
   {
    "idx": 946,
-   "key": "Software\\\\Martin Prikryl\\\\WinSCP 2\\\\Sessions"
+   "key": "Software\\\\Martin Prikryl\\\\WinSCP 2\\\\Sessions",
+   "report_category": "SSH、GPG 与密钥",
+   "kind": "config"
   }
  ],
  "wallet_extensions": [

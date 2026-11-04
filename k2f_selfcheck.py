@@ -1,463 +1,346 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-r"""K2F 离线自查工具。
-
-用途：检查本机是否留有 K2F（NIKKE Launcher 供应链事件）的运行痕迹，
-以及样本字符串表还原出的采集目标在本机是否存在。
-
-特点：
-- 纯离线：不联网、不上传、不执行任何样本。
-- 只读：只做存在性/计数，不读取文件内容，不解析密码。
-- 结果写入一份 Markdown 报告，供用户自己查看。
-
-用法：
-  python k2f_selfcheck.py
-  python k2f_selfcheck.py --nikke-launcher "D:\NIKKE" --out report.md
-  python k2f_selfcheck.py --quick          # 只查运行痕迹，不扫采集目标
-"""
+"""K2F 本地泄露面模拟：只读元信息和浏览器加密版本统计，生成脱敏 HTML。"""
 
 import argparse
 import ctypes
 import ctypes.wintypes as wt
-import glob
+import fnmatch
 import json
+import ntpath
 import os
+from pathlib import Path
 import re
 import sqlite3
+import stat
 import sys
 import winreg
 from datetime import datetime
 
-GENERIC_READ = 0x80000000
-FILE_SHARE_ALL = 0x7
-OPEN_EXISTING = 3
-FILE_ATTRIBUTE_NORMAL = 0x80
-INVALID_HANDLE_VALUE = -1
+from k2f_report import render_report
+
 
 k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+k32.GetDriveTypeW.argtypes = [wt.LPCWSTR]
+k32.GetDriveTypeW.restype = wt.UINT
 k32.CreateFileW.restype = wt.HANDLE
 k32.CreateFileW.argtypes = [wt.LPCWSTR, wt.DWORD, wt.DWORD, wt.LPVOID, wt.DWORD, wt.DWORD, wt.HANDLE]
+k32.GetFileSizeEx.argtypes = [wt.HANDLE, ctypes.POINTER(ctypes.c_longlong)]
 k32.ReadFile.argtypes = [wt.HANDLE, wt.LPVOID, wt.DWORD, ctypes.POINTER(wt.DWORD), wt.LPVOID]
-k32.GetFileSize.argtypes = [wt.HANDLE, ctypes.POINTER(wt.DWORD)]
-k32.GetFileSize.restype = wt.DWORD
 k32.CloseHandle.argtypes = [wt.HANDLE]
 
 
+class LocalOnlyError(OSError):
+    """该路径不能在纯本地范围内检查。"""
+
+
 def ensure_environment():
-    """在精简环境里从注册表补齐 USERPROFILE/APPDATA 等变量。"""
-    places = {
-        "USERPROFILE": [("HKCU", r"Volatile Environment"), ("HKLM", r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")],
-        "APPDATA": [("HKCU", r"Volatile Environment"), ("HKCU", r"Environment")],
-        "LOCALAPPDATA": [("HKCU", r"Volatile Environment"), ("HKCU", r"Environment")],
-        "TEMP": [("HKCU", r"Environment")],
-        "TMP": [("HKCU", r"Environment")],
-        "COMPUTERNAME": [("HKLM", r"SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName")],
-    }
-    hives = {"HKCU": winreg.HKEY_CURRENT_USER, "HKLM": winreg.HKEY_LOCAL_MACHINE}
-    for name, candidates in places.items():
+    """在精简启动环境下从当前用户注册表补齐目录变量。"""
+    for name in ("USERPROFILE", "APPDATA", "LOCALAPPDATA"):
         if os.environ.get(name):
             continue
-        for hive_name, key in candidates:
+        for key in (r"Volatile Environment", r"Environment"):
             try:
-                h = winreg.OpenKey(hives[hive_name], key)
-                value, _ = winreg.QueryValueEx(h, "ComputerName" if name == "COMPUTERNAME" else name)
-                h.Close()
+                with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key) as handle:
+                    value, _ = winreg.QueryValueEx(handle, name)
                 if value:
                     os.environ[name] = str(value)
                     break
             except OSError:
                 continue
-    if not os.environ.get("USERPROFILE"):
-        os.environ["USERPROFILE"] = os.path.expanduser("~")
 
 
-def read_shared(path):
-    h = k32.CreateFileW(path, GENERIC_READ, FILE_SHARE_ALL, None, OPEN_EXISTING,
-                        FILE_ATTRIBUTE_NORMAL, None)
-    if h == INVALID_HANDLE_VALUE or not h:
-        raise OSError(ctypes.get_last_error(), "CreateFileW")
-    try:
-        size = k32.GetFileSize(h, None)
-        buf = ctypes.create_string_buffer(size)
-        read = wt.DWORD(0)
-        if not k32.ReadFile(h, buf, size, ctypes.byref(read), None):
-            raise OSError(ctypes.get_last_error(), "ReadFile")
-        return buf.raw[:read.value]
-    finally:
-        k32.CloseHandle(h)
+def normalize(template):
+    return re.sub(r"\\+", r"\\", template)
 
 
-def normalize(t):
-    return t.replace("\\\\", "\\")
+def local_path(path):
+    # 在 stat / glob / open 之前拒绝 UNC、设备路径、映射盘和重解析点，避免触发网络访问。
+    raw = os.fspath(path)
+    if raw.startswith(("\\\\", "//")):
+        raise LocalOnlyError("network_or_device_path")
+    path = os.path.abspath(raw)
+    drive, tail = ntpath.splitdrive(path)
+    if not re.fullmatch(r"[A-Za-z]:", drive) or k32.GetDriveTypeW(drive + "\\") not in (2, 3, 6):
+        raise LocalOnlyError("nonlocal_drive")
+    if ":" in tail:
+        raise LocalOnlyError("alternate_stream")
+    current = drive + "\\"
+    for part in tail.strip("\\/").split("\\"):
+        if not part:
+            continue
+        current = os.path.join(current, part)
+        try:
+            info = os.lstat(current)
+        except FileNotFoundError:
+            break
+        if getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT:
+            raise LocalOnlyError("reparse_point")
+    return path
 
 
-def expand(t):
-    t = normalize(t)
-    t = t.replace("~", os.environ.get("USERPROFILE", ""))
-    return os.path.expandvars(t)
+def expand(template):
+    # 先检查原模板，不能把 UNC 的双反斜杠规范化成本地根目录。
+    if template.startswith(("\\\\", "//")):
+        raise LocalOnlyError("network_template")
+    template = normalize(template)
+    if template.startswith("~"):
+        profile = os.environ.get("USERPROFILE")
+        if not profile:
+            raise LocalOnlyError("missing_environment")
+        template = profile + template[1:]
+    path = os.path.expandvars(template)
+    if re.search(r"%[^%]+%|\$[A-Za-z_{]", path):
+        raise LocalOnlyError("missing_environment")
+    return path
+
+
+def local_matches(pattern):
+    """按模板遍历本地路径；递归通配符不会进入链接、挂载点或共享目录。"""
+    drive, tail = ntpath.splitdrive(pattern)
+    root = local_path(drive + "\\")
+    parts = tail.strip("\\/").split("\\")
+
+    def walk(base, rest):
+        local_path(base)
+        if not rest:
+            if os.path.exists(base):
+                yield base
+            return
+        component, remaining = rest[0], rest[1:]
+        if component == "**":
+            yield from walk(base, remaining)
+            with os.scandir(base) as entries:
+                for entry in entries:
+                    if entry.is_dir(follow_symlinks=False):
+                        yield from walk(entry.path, rest)
+        elif any(c in component for c in "*?["):
+            with os.scandir(base) as entries:
+                for entry in entries:
+                    if fnmatch.fnmatchcase(entry.name.lower(), component.lower()):
+                        yield from walk(entry.path, remaining)
+        else:
+            child = os.path.join(base, component)
+            local_path(child)
+            if os.path.exists(child):
+                yield from walk(child, remaining)
+
+    yield from walk(root, parts)
 
 
 def check_path(template):
-    p = expand(template)
-    if any(c in p for c in "*?"):
-        hits = glob.glob(p, recursive=True)
-        return {"status": "matched" if hits else "absent", "path": p, "matches": len(hits)}
     try:
-        if os.path.isdir(p):
-            return {"status": "present", "path": p, "type": "dir"}
-        if os.path.isfile(p):
-            return {"status": "present", "path": p, "type": "file", "size": os.path.getsize(p)}
+        path = expand(template)
+        if any(c in path for c in "*?["):
+            count = 0
+            try:
+                for _ in local_matches(path):
+                    count += 1
+            except OSError:
+                return {"status": "partial", "matches": count}
+            return {"status": "matched" if count else "absent", "matches": count}
+        info = os.stat(local_path(path), follow_symlinks=False)
+        return {"status": "present", "type": "dir" if stat.S_ISDIR(info.st_mode) else "file"}
+    except FileNotFoundError:
+        return {"status": "absent"}
+    except LocalOnlyError:
+        return {"status": "skipped"}
     except OSError:
-        pass
-    return {"status": "absent", "path": p}
+        return {"status": "unreadable"}
 
 
 def check_registry(key):
-    for hive_name, hive in (("HKCU", winreg.HKEY_CURRENT_USER), ("HKLM", winreg.HKEY_LOCAL_MACHINE)):
+    found, incomplete = [], False
+    for name, hive in (("HKCU", winreg.HKEY_CURRENT_USER), ("HKLM", winreg.HKEY_LOCAL_MACHINE)):
         try:
-            h = winreg.OpenKey(hive, key)
-            h.Close()
-            return {"status": "present", "hive": hive_name}
+            with winreg.OpenKey(hive, normalize(key)):
+                found.append(name)
+        except FileNotFoundError:
+            continue
         except OSError:
-            continue
-    return {"status": "absent"}
+            incomplete = True
+    return {"status": "present" if found else ("unreadable" if incomplete else "absent"),
+            "hives": found, "partial": incomplete}
 
 
-def find_nikke_launcher(explicit=None):
-    if explicit and os.path.isdir(explicit):
-        return explicit
-    env = os.environ.get("NIKKE_LAUNCHER")
-    if env and os.path.isdir(env):
-        return env
-    for drive in "CDEFGHIJKLMNOPQRSTUVWXYZ":
-        for name in ("NIKKE", "NIKKE_HMT", "NIKKE Launcher"):
-            candidate = drive + ":\\" + name
-            if os.path.isdir(os.path.join(candidate, "Launcher")):
-                return candidate
-    for pf in (os.environ.get("ProgramFiles"), os.environ.get("ProgramFiles(x86)")):
-        if pf:
-            candidate = os.path.join(pf, "NIKKE")
-            if os.path.isdir(os.path.join(candidate, "Launcher")):
-                return candidate
-    return None
+def read_shared(path):
+    path = local_path(path)
+    handle = k32.CreateFileW(path, 0x80000000, 0x7, None, 3, 0x80, None)
+    if handle == wt.HANDLE(-1).value or not handle:
+        raise OSError("database_unreadable")
+    try:
+        size = ctypes.c_longlong()
+        if not k32.GetFileSizeEx(handle, ctypes.byref(size)):
+            raise OSError("database_size_unreadable")
+        # 控制共享快照的内存占用；超出范围的数据库明确标为未读取。
+        if size.value > 512 * 1024 * 1024:
+            raise OSError("database_too_large")
+        buffer = ctypes.create_string_buffer(size.value)
+        read = wt.DWORD()
+        if not k32.ReadFile(handle, buffer, size.value, ctypes.byref(read), None) or read.value != size.value:
+            raise OSError("database_changed_or_unreadable")
+        return buffer.raw
+    finally:
+        k32.CloseHandle(handle)
 
 
-def check_traces(launcher_dir):
-    traces = []
-    clsid = r"Software\Classes\CLSID\{E77CC89B-7401-4C04-8CED-149DB35ADD04}"
-    traces.append({"name": "HKCU CLSID 劫持键", **check_registry(clsid)})
+def browser_database(path, store):
+    try:
+        path = local_path(path)
+        before = os.stat(path)
+        raw = read_shared(path)
+        after = os.stat(path)
+        wal = local_path(path + "-wal")
+        has_wal = os.path.isfile(wal) and os.path.getsize(wal) > 0
+        wal_mode = raw.startswith(b"SQLite format 3\x00") and (raw[18] == 2 or raw[19] == 2)
+        if wal_mode:
+            # 内存快照没有 WAL 文件；仅修改内存中的日志模式以读取已检查点化的主库。
+            raw = raw[:18] + b"\x01\x01" + raw[20:]
+        table, column = ("logins", "password_value") if store == "passwords" else ("cookies", "encrypted_value")
+        connection = sqlite3.connect(":memory:")
+        try:
+            connection.deserialize(raw)
+            connection.execute("PRAGMA query_only=ON")
+            encrypted = "COALESCE(length(value), 0) = 0 AND " if store == "cookies" else ""
+            columns = ["COUNT(*)"]
+            for prefix in ("763130", "763230"):
+                columns.append(f"COALESCE(SUM({encrypted}substr(CAST({column} AS BLOB), 1, 3) = X'{prefix}'), 0)")
+            columns.extend([
+                f"COALESCE(SUM({encrypted}length({column}) > 0 AND substr(CAST({column} AS BLOB), 1, 3) NOT IN (X'763130', X'763230')), 0)",
+                f"COALESCE(SUM({encrypted}({column} IS NULL OR length({column}) = 0)), 0)",
+                "COALESCE(SUM(length(value) > 0), 0)" if store == "cookies" else "0",
+            ])
+            values = connection.execute("SELECT " + ", ".join(columns) + " FROM " + table).fetchone()
+        finally:
+            connection.close()
+        changed = (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns)
+        return {"status": "partial" if has_wal or wal_mode or changed else "read", "wal": has_wal or wal_mode,
+                "counts": dict(zip(("total", "v10", "v20", "other", "empty", "plain"), values))}
+    except FileNotFoundError:
+        return {"status": "absent"}
+    except LocalOnlyError:
+        return {"status": "skipped"}
+    except (OSError, sqlite3.Error, OverflowError):
+        return {"status": "unreadable"}
 
-    local = os.environ.get("LOCALAPPDATA", "")
-    for label, base in (
-        ("Chrome", os.path.join(local, "Google", "Chrome", "User Data", "PlatformExperienceHelper")),
-        ("Edge", os.path.join(local, "Microsoft", "Edge", "User Data", "PlatformExperienceHelper")),
+
+def browser_roots():
+    for name, template, flat in (
+        ("Chrome", r"%LOCALAPPDATA%\Google\Chrome\User Data", False),
+        ("Edge", r"%LOCALAPPDATA%\Microsoft\Edge\User Data", False),
+        ("Brave", r"%LOCALAPPDATA%\BraveSoftware\Brave-Browser\User Data", False),
+        ("Vivaldi", r"%LOCALAPPDATA%\Vivaldi\User Data", False),
+        ("Opera", r"%APPDATA%\Opera Software\Opera Stable", True),
     ):
-        found = []
-        if os.path.isdir(base):
-            for name in os.listdir(base):
-                sub = os.path.join(base, name)
-                if re.fullmatch(r"[0-9a-fA-F]{64}", name) and os.path.isdir(sub):
-                    dll = os.path.join(sub, "platform_experience_helper.dll")
-                    if os.path.isfile(dll):
-                        found.append(dll)
-        traces.append({"name": label + " PlatformExperienceHelper 64-hex DLL",
-                       "status": "present" if found else "absent", "paths": found})
-
-    temp = os.environ.get("TEMP", "")
-    temp_hits = []
-    if os.path.isdir(temp):
-        for name in os.listdir(temp):
-            if name.lower().startswith("k2f"):
-                temp_hits.append(os.path.join(temp, name))
-    traces.append({"name": "%TEMP% 下的 k2f-* 文件",
-                   "status": "present" if temp_hits else "absent", "paths": temp_hits})
-
-    state_hits = []
-    for d in (
-        os.path.join(os.environ.get("APPDATA", ""), "nikke_launcher", "tbs_cache", "Local Storage", "leveldb"),
-        os.path.join(os.environ.get("APPDATA", ""), "nikke_launcher_hmt", "tbs_cache", "Local Storage", "leveldb"),
-    ):
-        if not os.path.isdir(d):
-            continue
-        for name in os.listdir(d):
-            p = os.path.join(d, name)
-            try:
-                with open(p, "rb") as f:
-                    if b"k2f.agent.state" in f.read(4 * 1024 * 1024):
-                        state_hits.append(p)
-            except OSError:
-                pass
-    traces.append({"name": "Launcher Local Storage 中的 k2f.agent.state",
-                   "status": "present" if state_hits else "absent", "paths": state_hits})
-
-    log_result = {"name": "Launcher debug.log 中的 k2f_chan", "status": "not_checked"}
-    download_result = {"name": "Launcher 日志中的 insight.bundle 下载记录", "status": "not_checked"}
-    if launcher_dir:
-        log_path = os.path.join(launcher_dir, "Launcher", "intl_service", "debug.log")
-        if os.path.isfile(log_path):
-            hits = []
-            with open(log_path, "r", encoding="utf-8", errors="ignore") as f:
-                for line in f:
-                    if re.search(r"k2f_chan|adopted|agent started as", line):
-                        hits.append(line.strip()[:200])
-            log_result = {"name": "Launcher debug.log 中的 k2f_chan",
-                          "status": "present" if hits else "absent",
-                          "path": log_path, "hits": hits[:5]}
-        else:
-            log_result = {"name": "Launcher debug.log 中的 k2f_chan",
-                          "status": "file_missing", "path": log_path}
-
-        tiny_dir = os.path.join(launcher_dir, "Launcher", "log", "tinyget")
-        download_hits = []
-        success = failed = False
-        if os.path.isdir(tiny_dir):
-            for name in os.listdir(tiny_dir):
-                if not name.lower().endswith(".log"):
-                    continue
-                try:
-                    with open(os.path.join(tiny_dir, name), "r", encoding="latin-1", errors="ignore") as f:
-                        for line in f:
-                            if "insight.bundle" in line or "analytics.insightjs.com" in line:
-                                download_hits.append(name + ": " + line.strip()[:200])
-                                if "lua downloaded to" in line or "total=205135" in line:
-                                    success = True
-                                if "curl_error=" in line or "curl perform failed" in line:
-                                    failed = True
-                except OSError:
-                    pass
-        outcome = "success" if success else ("failed" if failed else "unknown")
-        download_result = {"name": "Launcher 日志中的 insight.bundle 下载记录",
-                           "status": "present" if download_hits else "absent",
-                           "outcome": outcome,
-                           "hits": download_hits[:5]}
-    traces.append(log_result)
-    traces.append(download_result)
-    return traces
+        yield name, template, flat
 
 
-def compute_stage(traces):
-    status = {t["name"]: t.get("status") for t in traces}
-    if status.get("HKCU CLSID 劫持键") == "present" or any(
-        status.get(n) == "present" for n in status if n.endswith("64-hex DLL")):
-        return 3, "发现持久化痕迹（CLSID 或 DLL）"
-    if status.get("Launcher debug.log 中的 k2f_chan") == "present" or \
-       status.get("Launcher Local Storage 中的 k2f.agent.state") == "present":
-        return 2, "发现 K2F 执行痕迹（k2f_chan 或 agent.state）"
-    if status.get("Launcher 日志中的 insight.bundle 下载记录") == "present":
-        dl = next((t for t in traces if t["name"] == "Launcher 日志中的 insight.bundle 下载记录"), {})
-        if dl.get("outcome") == "failed":
-            return 1, "发现 insight.bundle 下载尝试（失败），执行未确认"
-        return 1, "发现 insight.bundle 下载尝试，执行未确认"
-    return 0, "未发现已知 K2F 痕迹"
+def browser_profiles(root, flat=False):
+    root = local_path(root)
+    if not os.path.isdir(root):
+        return []
+    profiles = [("主配置", root)] if flat else []
+    with os.scandir(root) as entries:
+        for entry in sorted(entries, key=lambda e: e.name):
+            if entry.name == "Default" or re.fullmatch(r"Profile \d+", entry.name):
+                # 使用固定别名，报告不保留自定义配置名称。
+                local_path(entry.path)
+                if entry.is_dir(follow_symlinks=False):
+                    profiles.append(("配置 " + str(len(profiles) + 1), entry.path))
+    return profiles
 
 
-def check_wallets(ids):
-    matches = []
-    local = os.environ.get("LOCALAPPDATA", "")
-    for browser, base in (
-        ("Chrome", os.path.join(local, "Google", "Chrome", "User Data")),
-        ("Edge", os.path.join(local, "Microsoft", "Edge", "User Data")),
-    ):
-        for prof in ("Default", "Profile 1", "Profile 2"):
-            ext_dir = os.path.join(base, prof, "Extensions")
-            if not os.path.isdir(ext_dir):
-                continue
-            for eid in ids:
-                if os.path.isdir(os.path.join(ext_dir, eid)):
-                    matches.append({"browser": browser, "profile": prof, "id": eid})
-    return matches
+def scan_browsers(wallet_ids, skip_counts=False, skip_wallets=False):
+    databases, wallets, coverage = [], [], []
+    for browser, template, flat in browser_roots():
+        try:
+            root = expand(template)
+            profiles = browser_profiles(root, flat)
+            coverage.append({"browser": browser, "status": "present" if profiles else "absent"})
+            for profile, directory in profiles:
+                if not skip_counts:
+                    for store, filename in (("passwords", "Login Data"), ("passwords", "Login Data For Account"),
+                                            ("cookies", r"Network\Cookies"), ("cookies", "Cookies")):
+                        result = browser_database(os.path.join(directory, filename), store)
+                        databases.append({"browser": browser, "profile": profile, "store": store,
+                                          "database": filename, **result})
+                if not skip_wallets:
+                    for extension_id in wallet_ids:
+                        if not re.fullmatch(r"[a-p]{32}", extension_id):
+                            continue
+                        result = check_path(os.path.join(directory, "Extensions", extension_id))
+                        if result["status"] != "absent":
+                            wallets.append({"browser": browser, "profile": profile, "id": extension_id, **result})
+        except (OSError, ValueError):
+            coverage.append({"browser": browser, "status": "unreadable"})
+    return databases, wallets, coverage
 
 
-def count_browser_rows(user_data_dir):
-    out = {}
-    for profile in ("Default", "Profile 1", "Profile 2"):
-        pdir = os.path.join(user_data_dir, profile)
-        for label, rel in (("login_data", ("Login Data",)), ("cookies", ("Network", "Cookies"))):
-            p = os.path.join(pdir, *rel)
-            if not os.path.isfile(p):
-                continue
-            try:
-                raw = read_shared(p)
-                con = sqlite3.connect(":memory:")
-                con.deserialize(raw)
-                table = "logins" if label == "login_data" else "cookies"
-                try:
-                    n = con.execute("SELECT COUNT(*) FROM " + table).fetchone()[0]
-                    out.setdefault(profile, {})[label] = n
-                except sqlite3.Error:
-                    out.setdefault(profile, {})[label] = "unreadable"
-                con.close()
-            except OSError as exc:
-                out.setdefault(profile, {})[label] = "locked(%s)" % exc.errno
-    return out
+def open_report(path):
+    # 仅交给系统打开已写入的本地 HTML，不启动 HTTP 服务。
+    os.startfile(local_path(path), "open")
 
 
-def fmt_status(item):
-    s = item.get("status")
-    if s == "present":
-        if item.get("outcome") == "failed":
-            return "存在（下载失败）"
-        if item.get("outcome") == "success":
-            return "存在（下载成功）"
-        if item.get("type") == "dir":
-            return "存在（目录）"
-        if item.get("size") is not None:
-            return "存在（文件 %d 字节）" % item["size"]
-        return "存在"
-    if s == "matched":
-        return "通配符匹配 %d 项" % item.get("matches", 0)
-    if s == "absent":
-        return "不存在"
-    if s == "file_missing":
-        return "日志文件不存在"
-    if s == "not_checked":
-        return "未检查"
-    return str(s)
-
-
-def main():
-    ap = argparse.ArgumentParser(description="K2F 离线自查（只读，不上传）")
-    ap.add_argument("--targets", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "k2f_targets.json"))
-    ap.add_argument("--out", default=None, help="报告路径（默认当前目录，带时间戳）")
-    ap.add_argument("--nikke-launcher", default=None, help="NIKKE 根目录，例如 D:\\NIKKE；不填会自动探测")
-    ap.add_argument("--quick", action="store_true", help="只查运行痕迹，不扫采集目标")
-    ap.add_argument("--no-browser-count", action="store_true")
-    args = ap.parse_args()
-
-    ensure_environment()
-    launcher = find_nikke_launcher(args.nikke_launcher)
-    if not launcher:
-        print("[提示] 未自动找到 NIKKE 安装目录；日志检查会被跳过。可用 --nikke-launcher 指定。")
-
-    if not os.path.isfile(args.targets):
-        print("找不到目标清单: " + args.targets, file=sys.stderr)
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="K2F 本地泄露面模拟 · 只读 · 脱敏 HTML 报告")
+    parser.add_argument("--targets", default=str(Path(__file__).with_name("k2f_targets.json")), help="本地目标清单")
+    parser.add_argument("--out", help="本地 HTML 报告路径（.html 或 .htm）")
+    parser.add_argument("--quick", action="store_true", help="只检查目标元信息，跳过浏览器数据库和钱包扩展")
+    parser.add_argument("--no-browser-count", action="store_true", help="跳过浏览器数据库统计")
+    parser.add_argument("--no-open", action="store_true", help="生成报告后不自动打开浏览器")
+    args = parser.parse_args(argv)
+    if sys.version_info < (3, 11) or not hasattr(sqlite3.Connection, "deserialize"):
+        print("需要包含 SQLite deserialize 支持的 Python 3.11+。", file=sys.stderr)
         return 2
-    with open(args.targets, "r", encoding="utf-8") as f:
-        data = json.load(f)
+    now = datetime.now()
+    try:
+        output = local_path(args.out or ("K2F_selfcheck_" + now.strftime("%Y%m%d_%H%M%S_%f") + ".html"))
+        if Path(output).suffix.lower() not in (".html", ".htm"):
+            parser.error("--out 必须使用 .html 或 .htm 扩展名")
+        with open(local_path(args.targets), encoding="utf-8") as stream:
+            targets = json.load(stream)
+    except (OSError, ValueError):
+        print("无法读取本地目标清单或使用指定输出路径；网络位置和重解析点会被跳过。", file=sys.stderr)
+        return 2
 
-    traces = check_traces(launcher)
-    stage, stage_text = compute_stage(traces)
-
+    print("\n  K2F · 本地泄露面模拟\n  不上传数据 / 不解密凭据 / 不判定感染\n")
+    ensure_environment()
     results = []
-    if not args.quick:
-        for item in data.get("paths", []):
-            r = check_path(item["template"])
-            r["category"] = item["category"]
-            r["template"] = item["template"]
-            results.append(r)
+    print("  [1/3] 检查应用与鉴权目标…", flush=True)
+    for item in targets.get("paths", []):
+        if item.get("scope") == "excluded":
+            continue
+        results.append({"template": normalize(item["template"]), "category": item["category"],
+                        "report_category": item.get("report_category", "其他开发工具"),
+                        "kind": item.get("kind", "config"), **check_path(item["template"])})
+    registry = []
+    for item in targets.get("registry", []):
+        if item.get("scope") != "excluded":
+            registry.append({"key": normalize(item["key"]), "kind": item.get("kind", "config"),
+                             **check_registry(item["key"])})
 
-    present = [r for r in results if r["status"] == "present"]
-    matched = [r for r in results if r["status"] == "matched"]
-    absent = [r for r in results if r["status"] not in ("present", "matched")]
-    regs = []
-    for item in data.get("registry", []):
-        r = check_registry(item["key"])
-        r["key"] = item["key"]
-        regs.append(r)
-
-    browser_counts = {}
-    if not args.no_browser_count and not args.quick:
-        local = os.environ.get("LOCALAPPDATA", "")
-        for label, path in (
-            ("Chrome", os.path.join(local, "Google", "Chrome", "User Data")),
-            ("Edge", os.path.join(local, "Microsoft", "Edge", "User Data")),
-        ):
-            if os.path.isdir(path):
-                browser_counts[label] = count_browser_rows(path)
-
-    wallets = check_wallets(data.get("wallet_extensions", [])) if not args.quick else []
-
-    out_path = args.out or ("K2F_selfcheck_" + datetime.now().strftime("%Y%m%d_%H%M%S") + ".md")
-
-    lines = []
-    lines.append("# K2F 离线自查报告")
-    lines.append("")
-    lines.append("- 生成时间：" + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    lines.append("- 主机：" + os.environ.get("COMPUTERNAME", "unknown"))
-    lines.append("- 样本：" + data.get("source", {}).get("sample_sha256", "unknown"))
-    lines.append("- NIKKE 目录：" + (launcher or "未找到"))
-    lines.append("- 说明：只做存在性/计数，不读取文件内容、不联网、不写运行日志。")
-    lines.append("")
-    lines.append("## 判定")
-    lines.append("")
-    lines.append("**阶段 %d：%s**" % (stage, stage_text))
-    lines.append("")
-    lines.append("| 检查项 | 状态 |")
-    lines.append("|---|---|")
-    for t in traces:
-        lines.append("| %s | %s |" % (t["name"], fmt_status(t)))
-    lines.append("")
-    if stage >= 2:
-        lines.append("发现执行或持久化痕迹，建议按完整失陷处置：轮换凭据、隔离主机。")
-    elif stage == 1:
-        lines.append("只发现下载尝试，未确认执行；建议保留日志并复查网络记录。")
-    else:
-        lines.append("未发现已知 K2F 痕迹；这不等于绝对未感染，需结合日志完整性判断。")
-    lines.append("")
-
-    if not args.quick:
-        lines.append("## 采集目标")
-        lines.append("")
-        lines.append("存在 %d 项，通配符匹配 %d 项，未命中 %d 项。"
-                     % (len(present), len(matched), len(absent)))
-        lines.append("")
-        by_cat = {}
-        for r in results:
-            by_cat.setdefault(r["category"], []).append(r)
-        for cat in sorted(by_cat, key=lambda c: -len(by_cat[c])):
-            items = by_cat[cat]
-            hit = [r for r in items if r["status"] in ("present", "matched")]
-            if not hit:
-                continue
-            lines.append("### %s（存在 %d / 共 %d 项）" % (cat, len(hit), len(items)))
-            lines.append("")
-            lines.append("| 目标 | 状态 |")
-            lines.append("|---|---|")
-            for r in hit:
-                lines.append("| %s | %s |" % (r["template"], fmt_status(r)))
-            lines.append("")
-        if regs:
-            lines.append("### 注册表")
-            lines.append("")
-            lines.append("| 键 | 状态 |")
-            lines.append("|---|---|")
-            for r in regs:
-                lines.append("| %s | %s |" % (r["key"], fmt_status(r)))
-            lines.append("")
-        if browser_counts:
-            lines.append("## 浏览器数据库")
-            lines.append("")
-            for browser, profiles in browser_counts.items():
-                for profile, counts in profiles.items():
-                    parts = []
-                    if "login_data" in counts:
-                        parts.append("Login Data %s 条" % counts["login_data"])
-                    if "cookies" in counts:
-                        parts.append("Cookies %s 条" % counts["cookies"])
-                    lines.append("- %s / %s：%s" % (browser, profile, "，".join(parts)))
-            lines.append("")
-        lines.append("## 钱包扩展")
-        lines.append("")
-        if wallets:
-            lines.append("发现 %d 个样本目标中的钱包扩展：" % len(wallets))
-            for w in wallets:
-                lines.append("- " + w["browser"] + " / " + w["profile"] + "：" + w["id"])
-        else:
-            lines.append("未发现样本目标中的 28 个钱包扩展。")
-        lines.append("")
-
-    lines.append("## 边界")
-    lines.append("")
-    lines.append("- “存在”只表示样本会查找该目标，不代表它已经被读取或上传。")
-    lines.append("- 工具不能判断已经上传了什么；确认外传需要 SRUM、防火墙/代理日志或 Launcher 日志。")
-    lines.append("- 报告不含文件内容、密码或账户标识。")
-
-    with open(out_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines) + "\n")
-    print("报告已写入: " + out_path)
-    print("阶段 %d：%s" % (stage, stage_text))
-    print("采集目标：存在 %d，通配符匹配 %d，未命中 %d" % (len(present), len(matched), len(absent)))
-    return 0 if stage < 2 else 1
+    print("  [2/3] 统计浏览器加密版本与钱包扩展…", flush=True)
+    skip_counts = args.quick or args.no_browser_count
+    databases, wallets, coverage = scan_browsers(targets.get("wallet_extensions", []), skip_counts, args.quick)
+    report = {"generated_at": now.strftime("%Y-%m-%d %H:%M:%S"), "results": results,
+              "registry": registry, "databases": databases, "wallets": wallets, "coverage": coverage,
+              "skip_counts": skip_counts, "skip_wallets": args.quick}
+    print("  [3/3] 生成脱敏 HTML 报告…", flush=True)
+    try:
+        # 独占创建避免覆盖已有报告或用户文件。
+        with open(local_path(output), "x", encoding="utf-8") as stream:
+            stream.write(render_report(report))
+    except OSError:
+        print("报告未写入：请使用可写的本地目录和未使用的文件名。", file=sys.stderr)
+        return 2
+    print("\n  报告已保存：" + output)
+    print("  仅模拟可被读取的目标，不判断真实泄露。")
+    if not args.no_open:
+        try:
+            open_report(output)
+        except OSError:
+            print("  无法自动打开默认浏览器，请手动打开上面的 HTML 文件。")
+    return 0
 
 
 if __name__ == "__main__":
